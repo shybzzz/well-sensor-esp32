@@ -1,3 +1,6 @@
+#ifndef __INIT_PINS__
+#define __INIT_PINS__
+
 #define LED_RED 12u
 #define LED_GREEN 14u
 #define LED_BLUE 27u
@@ -25,3 +28,5 @@ void dance(uint16_t d) {
   digitalWrite(LED_GREEN, LOW);
   delay(d);  
 }
+
+#endif

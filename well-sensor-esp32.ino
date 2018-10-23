@@ -1,20 +1,10 @@
 #include "Arduino.h"
+#include "SPIFFS.h"
 #include "init-pins.h"
 #include "init-reset-button.h"
 
 #include <WiFi.h>
 WiFiServer wifiServer(80);
-
-#include "SPIFFS.h"
-
-void formatFlash(){
-  Serial.println("Removing Stored Config...");
-  SPIFFS.format();
-  Serial.println("Restarting Well Sensor...");
-  delay(500);
-  ESP.restart();
-  
-}
 
 struct QRConfig {
   char AP_SSID[64];
@@ -98,8 +88,6 @@ void setup() {
 
   Serial.println("Well Sensor is running");
 }
-
-
 
 void loop() {
 
