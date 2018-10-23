@@ -19,4 +19,8 @@ void formatFlash(){
   ESP.restart();  
 }
 
+void initResetButton() {
+  attachInterrupt(digitalPinToInterrupt(BTN_PIN), handleIntr, HIGH);
+}
+
 #endif
