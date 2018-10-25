@@ -12,11 +12,14 @@ void IRAM_ATTR handleIntr()
 }
 
 void formatFlash(){
+  
   Serial.println("Removing Stored Config...");
   SPIFFS.format();
+  
   Serial.println("Restarting Well Sensor...");
   delay(500);
   ESP.restart();  
+  
 }
 
 void initResetButton() {

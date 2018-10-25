@@ -33,6 +33,22 @@ void loop() {
   if(buttonClicked) {
     formatFlash();
   }
+
+  WiFiClient client = wifiServer.available();
+
+  if(!isWifiConfigSet) {
+    
+    redLight();
+    
+    char* wifiData = readSocket(client, 1);
+    if(wifiData) {
+      Serial.println("Wifi Data");
+      Serial.println(wifiData);
+    } else {
+      return;
+    }
+    
+  }
   
   dance(1000);
   
