@@ -7,8 +7,7 @@
 #include "init-reset-button.h"
 #include "init-qr.h"
 #include "init-wifi.h"
-
-
+#include "init-sockets.h"
 
 void setup() {
 
@@ -40,10 +39,9 @@ void loop() {
     
     redLight();
     
-    char* wifiData = readSocket(client, 1);
-    if(wifiData) {
-      Serial.println("Wifi Data");
-      Serial.println(wifiData);
+    if(readSocket(client, 255)) {
+      Serial.println("Wifi Config");
+      printSocketBuff();
     } else {
       return;
     }

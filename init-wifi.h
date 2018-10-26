@@ -63,36 +63,4 @@ void initWifi() {
   
 }
 
-char* readSocket(WiFiClient& client, uint8_t dataType) {
-  
-  char* buff = nullptr;
-  if(client && client.connected()) {
-    Serial.println("Client Connected");
-    Serial.print("Message Length: ");
-    Serial.println(client.available());
-    if(client.available()) {
-      byte msgType = client.read();
-      if(msgType == dataType) {
-        Serial.print("Data Type: ");
-        Serial.println(dataType);
-        uint16_t msgLength = client.available();
-        Serial.print("Message Length: ");
-        Serial.println(msgLength);
-        buff = new char[msgLength];
-        client.read(reinterpret_cast<uint8_t*>(buff), msgLength);
-      } else {
-        Serial.print("Not supported message type: ");
-        Serial.println(msgType);
-        client.write(dataType);
-      }
-    } else {
-      client.write(dataType);
-    }
-    delay(500);
-    client.stop();      
-  }
-  
-  return buff;  
-}
-
 #endif
