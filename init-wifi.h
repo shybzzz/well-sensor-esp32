@@ -4,8 +4,8 @@
 WiFiServer wifiServer(80);
 
 struct WifiConfig {
-  char ssid[64];
-  char pwd[64];
+  char ssid[MAX_STR_LEN];
+  char pwd[MAX_STR_LEN];
 };
 
 const char *wifiName = "/wifiConfig.json";
@@ -31,8 +31,8 @@ void loadWifiConfig(){
     if (json.success()) {
       Serial.println("Wifi Configuration");
       json.prettyPrintTo(Serial);
-      strlcpy(wifiConfig.ssid, json["ssid"], sizeof(wifiConfig.ssid));
-      strlcpy(wifiConfig.pwd, json["pwd"], sizeof(wifiConfig.pwd));
+      strlcpy(wifiConfig.ssid, json["ssid"], MAX_STR_LEN);
+      strlcpy(wifiConfig.pwd, json["pwd"], MAX_STR_LEN);
       isWifiConfigSet = true;      
     } else {
       Serial.println("Wifi Configuration is corrupted");
@@ -46,9 +46,9 @@ void loadWifiConfig(){
 
 void initWifi() {
   
-    loadWifiConfig();
+  loadWifiConfig();
   if(isWifiConfigSet){
-    Serial.println("Connecting Wifi");
+    Serial.println("Connecting Wifi...");
     if(WiFi.begin(wifiConfig.ssid, wifiConfig.pwd) != WL_CONNECTED){
       Serial.println("Wifi is not connected");
     }
@@ -61,6 +61,43 @@ void initWifi() {
   wifiServer.begin();
   Serial.println("Wifi Server is started");  
   
+}
+
+bool isWifiConnected() {
+  return WiFi.status() == WL_CONNECTED;
+}
+
+bool tryConnectWifi(char* ssid, char* pwd) {
+  
+  bool res = false;
+  
+  WiFi.begin(ssid, pwd);
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
+
+  uint8_t attempts = 0;
+  while ((!isWifiConnected()) && attempts < WIFI_TIMEOUT) { // Wait for the Wi-Fi to connect
+     delay(500);
+     Serial.print(".");
+     attempts++;
+  }
+  
+  if (attempts < WIFI_TIMEOUT && isWifiConnected() && WiFi.localIP() != IPAddress(0, 0, 0, 0)) {
+    Serial.println();
+    Serial.println("Connection established!");  
+    Serial.print("IP address:\t");
+    Serial.println(WiFi.localIP());
+    WiFi.softAPdisconnect();
+    isWifiConfigSet = true;
+    
+    res = true;
+  } else {
+    Serial.println();
+    Serial.println("Failed to connect to wifi");
+    WiFi.disconnect();
+  }
+
+  return res;
 }
 
 #endif

@@ -17,7 +17,7 @@ void formatFlash(){
   SPIFFS.format();
   
   Serial.println("Restarting Well Sensor...");
-  delay(500);
+  delay(1000);
   ESP.restart();  
   
 }
