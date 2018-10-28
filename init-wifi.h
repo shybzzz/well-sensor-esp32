@@ -12,6 +12,14 @@ const char *wifiName = "/wifiConfig.json";
 WifiConfig wifiConfig;
 bool isWifiConfigSet = false;
 
+void setWifiConfig(const char* ssid, const char* pwd) {
+  memset(wifiConfig.ssid, '\0', MAX_STR_LEN);
+  strlcpy(wifiConfig.ssid, ssid, MAX_STR_LEN);
+  memset(wifiConfig.pwd, '\0', MAX_STR_LEN);
+  strlcpy(wifiConfig.pwd, pwd, MAX_STR_LEN);
+  isWifiConfigSet = true;      
+}
+
 void loadWifiConfig(){
   
   if(!SPIFFS.exists(wifiName)){
@@ -20,28 +28,75 @@ void loadWifiConfig(){
     return;
   }
 
-  File wifiFile = SPIFFS.open(wifiName, "r");
+  File wifiFile = SPIFFS.open(wifiName);
   if (wifiFile) 
   {
     size_t size = wifiFile.size();
-    std::unique_ptr<char[]> buf(new char[size]);
-    wifiFile.readBytes(buf.get(), size);
-    DynamicJsonBuffer jsonBuffer;
-    JsonObject& json = jsonBuffer.parseObject(buf.get());
-    if (json.success()) {
-      Serial.println("Wifi Configuration");
-      json.prettyPrintTo(Serial);
-      strlcpy(wifiConfig.ssid, json["ssid"], MAX_STR_LEN);
-      strlcpy(wifiConfig.pwd, json["pwd"], MAX_STR_LEN);
-      isWifiConfigSet = true;      
-    } else {
-      Serial.println("Wifi Configuration is corrupted");
-    }
+    Serial.println("Reading Wifi Config from Flash");
+    
+//    std::unique_ptr<char[]> buf(new char[size]);
+//    wifiFile.readBytes(buf.get(), size);
+//    serialStr(buf.get());
+    
+    char* b = new char[size];
+    memset(wifiConfig.ssid, '\0', size);
+    wifiFile.readBytes(b, size);
+    serialStr(b);
+
+//    DynamicJsonBuffer jsonBuffer;
+//    JsonObject& json = jsonBuffer.parseObject(buf.get());
+//    
+//    if (json.success()) {
+//      Serial.println("Wifi Configuration");
+//      json.prettyPrintTo(Serial);
+//      setWifiConfig(json["ssid"], json["pwd"]);
+//    } else {
+//      Serial.println("Wifi Configuration is corrupted");
+//    }
+    
     wifiFile.close();
   } else {
       Serial.println("Failed opening Wifi Configuration File");
   }
   
+}
+
+void fileStr(File f, const char* str) {
+  for(int i = 0; i < strlen(str); i++) {
+    f.print(char(str[i]));
+  }
+  f.println();
+}
+
+bool saveWifiConfig(const char* ssid, const char* pwd) {
+  
+  bool res = false;
+  
+//  DynamicJsonBuffer jsonBuffer;
+//  JsonObject& json = jsonBuffer.createObject();
+//  
+//  json["wifi_ssid"] = ssid;
+//  json["wifi_pwd"] = pwd;      
+
+
+  if(SPIFFS.exists(wifiName)) {
+    SPIFFS.remove(wifiName);
+    delay(250);
+  }
+  
+  File configFile = SPIFFS.open(wifiName, FILE_WRITE);
+  if (configFile) {
+//    json.printTo(Serial);
+//    json.printTo(configFile);
+    
+    fileStr(configFile, ssid);
+    fileStr(configFile, pwd);
+
+    configFile.close();
+    res = true;
+  }
+  
+  return res;
 }
 
 void initWifi() {
