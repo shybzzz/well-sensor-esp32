@@ -13,19 +13,20 @@ void printSocketBuff() {
 
 bool readSocket(WiFiClient& client, uint8_t dataType) {
   
-  bool res = false;
-  memset(socketBuff, '\0', MAX_SOCKET_BUFF_SIZE);
-  char* tmp = nullptr;
+    bool res = false;
+    memset(socketBuff, '\0', MAX_SOCKET_BUFF_SIZE);
+    char* tmp = nullptr;
   
-  if(client && client.connected()) {
+    if (client.connected()) {
     
     Serial.println("Client Connected");
-    delay(250);
+    delay(2500);
     
-    if(client.available()) {
+    if (client.available()) {
       
       byte msgType = client.read();
-      
+      Serial.print("received: ");
+      Serial.println(msgType);
       if(msgType == dataType) {
         
         Serial.print("Data Type: ");
@@ -39,6 +40,7 @@ bool readSocket(WiFiClient& client, uint8_t dataType) {
         //printSocketBuff();
         
         res = true;
+        delete[] tmp;
         
       } else {
         
@@ -46,10 +48,12 @@ bool readSocket(WiFiClient& client, uint8_t dataType) {
         Serial.println(msgType);                
       }
       
-    }          
+    }
+    Serial.println("No bytes available");          
   }
+  //Serial.println("End of if(client)");
 
-  delete[] tmp;
+  //delete[] tmp;
   return res;
   
 }

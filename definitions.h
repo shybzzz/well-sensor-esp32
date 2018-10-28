@@ -4,7 +4,7 @@
 //Sizes
 
 #define MAX_SOCKET_BUFF_SIZE 1024u
-#define MAX_STR_LEN 256u
+#define MAX_STR_LEN 64u
 
 //WIFI
 

@@ -1,6 +1,8 @@
 #ifndef __INIT_WIFI__
 #define __INIT_WIFI__
 
+#include <string.h>
+
 WiFiServer wifiServer(80);
 
 struct WifiConfig {
@@ -9,19 +11,37 @@ struct WifiConfig {
 };
 
 const char *wifiName = "/wifiConfig.json";
-WifiConfig wifiConfig;
+static WifiConfig wifiConfig;
 bool isWifiConfigSet = false;
 
 void setWifiConfig(const char* ssid, const char* pwd) {
-  memset(wifiConfig.ssid, '\0', MAX_STR_LEN);
-  strlcpy(wifiConfig.ssid, ssid, MAX_STR_LEN);
-  memset(wifiConfig.pwd, '\0', MAX_STR_LEN);
-  strlcpy(wifiConfig.pwd, pwd, MAX_STR_LEN);
+  Serial.println("Reset ssid");
+  Serial.print("size of wifi.conf ssid: ");
+  Serial.println(sizeof(wifiConfig.ssid));
+  Serial.print("size of  ssid: ");
+  Serial.println(strlen(ssid));
+  
+  memset(wifiConfig.ssid, 0, MAX_STR_LEN);
+  Serial.println("Set new ssid");
+  memcpy(wifiConfig.ssid, ssid, MAX_STR_LEN);
+  
+  Serial.println("Reset pwd");
+  Serial.print("size of wifi.conf pwd: ");
+  Serial.println(strlen(wifiConfig.pwd));
+  Serial.print("size of  pwd: ");
+  Serial.println(strlen(pwd));
+  memset(wifiConfig.pwd, 0, MAX_STR_LEN);
+  Serial.println("Set new pwd");
+  memcpy(wifiConfig.pwd, pwd, MAX_STR_LEN);
   isWifiConfigSet = true;      
 }
 
 void loadWifiConfig(){
-  
+
+  if (!SPIFFS.begin()){
+    Serial.println("Failed to mount FS...");
+    return;
+  }
   if(!SPIFFS.exists(wifiName)){
     Serial.print(wifiName);
     Serial.println(" does not exist");
@@ -31,28 +51,30 @@ void loadWifiConfig(){
   File wifiFile = SPIFFS.open(wifiName);
   if (wifiFile) 
   {
+    Serial.println("Opened file");
     size_t size = wifiFile.size();
     Serial.println("Reading Wifi Config from Flash");
     
-//    std::unique_ptr<char[]> buf(new char[size]);
-//    wifiFile.readBytes(buf.get(), size);
-//    serialStr(buf.get());
+    std::unique_ptr<char[]> buf(new char[size]);
+    wifiFile.readBytes(buf.get(), size);
+    serialStr(buf.get());
     
-    char* b = new char[size];
-    memset(wifiConfig.ssid, '\0', size);
-    wifiFile.readBytes(b, size);
-    serialStr(b);
+    //char* b = new char[size];
+    //memset(wifiConfig.ssid, '\0', size);
+    //wifiFile.readBytes(b, size);
+    //serialStr(b);
+    //delete[] b;
 
-//    DynamicJsonBuffer jsonBuffer;
-//    JsonObject& json = jsonBuffer.parseObject(buf.get());
+    DynamicJsonBuffer jsonBuffer;
+    JsonObject& json = jsonBuffer.parseObject(buf.get());
 //    
-//    if (json.success()) {
-//      Serial.println("Wifi Configuration");
-//      json.prettyPrintTo(Serial);
-//      setWifiConfig(json["ssid"], json["pwd"]);
-//    } else {
-//      Serial.println("Wifi Configuration is corrupted");
-//    }
+    if (json.success()) {
+      Serial.println("Wifi Configuration");
+      json.prettyPrintTo(Serial);
+      setWifiConfig(json["wifi_ssid"], json["wifi_pwd"]);
+    } else {
+      Serial.println("Wifi Configuration is corrupted");
+    }
     
     wifiFile.close();
   } else {
@@ -72,25 +94,25 @@ bool saveWifiConfig(const char* ssid, const char* pwd) {
   
   bool res = false;
   
-//  DynamicJsonBuffer jsonBuffer;
-//  JsonObject& json = jsonBuffer.createObject();
+  DynamicJsonBuffer jsonBuffer;
+  JsonObject& json = jsonBuffer.createObject();
 //  
-//  json["wifi_ssid"] = ssid;
-//  json["wifi_pwd"] = pwd;      
+  json["wifi_ssid"] = ssid;
+  json["wifi_pwd"] = pwd;      
 
 
-  if(SPIFFS.exists(wifiName)) {
-    SPIFFS.remove(wifiName);
-    delay(250);
-  }
+//  if(SPIFFS.exists(wifiName)) {
+//    SPIFFS.remove(wifiName);
+//    delay(250);
+//  }
   
   File configFile = SPIFFS.open(wifiName, FILE_WRITE);
   if (configFile) {
-//    json.printTo(Serial);
-//    json.printTo(configFile);
+    json.printTo(Serial);
+    json.printTo(configFile);
     
-    fileStr(configFile, ssid);
-    fileStr(configFile, pwd);
+//    fileStr(configFile, ssid);
+//    fileStr(configFile, pwd);
 
     configFile.close();
     res = true;
@@ -131,7 +153,7 @@ bool tryConnectWifi(char* ssid, char* pwd) {
   Serial.println(ssid);
 
   uint8_t attempts = 0;
-  while ((!isWifiConnected()) && attempts < WIFI_TIMEOUT) { // Wait for the Wi-Fi to connect
+  while (!isWifiConnected() && attempts < WIFI_TIMEOUT) { // Wait for the Wi-Fi to connect
      delay(500);
      Serial.print(".");
      attempts++;
@@ -149,7 +171,7 @@ bool tryConnectWifi(char* ssid, char* pwd) {
   } else {
     Serial.println();
     Serial.println("Failed to connect to wifi");
-    WiFi.disconnect();
+    //WiFi.disconnect();
   }
 
   return res;

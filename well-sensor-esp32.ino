@@ -45,14 +45,17 @@ void loop() {
     return;
   }
 
+  //Serial.println("fetch wifi client");
   WiFiClient client = wifiServer.available();
 
+  //Serial.println("Check if wifiConfigs are set");
   if(!isWifiConfigSet) {
     redLight();
     readWifiConfig(client);
     return;    
   }
 
+  Serial.println("Check if connected to wifi.");
   if(!isWifiConnected()) {
     yellowLight();
     return;
@@ -60,7 +63,7 @@ void loop() {
 
   delay(250);
   client.stop();
-  
+  Serial.println("LEDs dancing....");
   dance(1000);
   
 }

@@ -10,12 +10,17 @@ bool readWifiConfig(WiFiClient& client) {
     memset(output[0], '\0', MAX_STR_LEN);
     memset(output[1], '\0', MAX_STR_LEN);
     res = parse(socketBuff, output);
+    
     if(res) {
+      serialStr("Parsed wifi configs");
+      serialStr(output[0]);
+      serialStr(output[1]);
       res = tryConnectWifi(output[0], output[1]);
-      
+      Serial.println("After tryConnectToWifi...");
       if(res) {
         res = saveWifiConfig(output[0], output[1]);
         if(res) {
+          Serial.println("wifi configs saved...");
           setWifiConfig(output[0], output[1]);  
           client.write((uint8_t) SUCCESS_RESPONSE_HEADER);
           client.write(WIFI_CONFIG_SUCCESS_RESPONSE_HEADER);
