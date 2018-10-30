@@ -20,7 +20,7 @@ bool readSocket(WiFiClient& client, uint8_t dataType) {
   if (client.connected()) {
     
     Serial.println("Client Connected");
-    delay(2500);
+    delay(750);
     
     if (client.available()) {
       
@@ -50,8 +50,8 @@ bool readSocket(WiFiClient& client, uint8_t dataType) {
       
     }          
   }
-  return res;
-  
+ 
+  return res; 
 }
 
 
