@@ -146,7 +146,6 @@ bool tryConnectWifi(char* ssid, char* pwd) {
   } else {
     Serial.println();
     Serial.println("Failed to connect to wifi");
-    //WiFi.disconnect();
   }
 
   return res;
