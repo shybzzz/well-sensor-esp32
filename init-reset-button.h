@@ -15,7 +15,6 @@ void formatFlash(){
   Serial.println("Removing Stored Config...");
   SPIFFS.format();
 
-  Serial.println("Clear button pressed flag...");
   buttonClicked = false;
   
   Serial.println("Restarting Well Sensor...");

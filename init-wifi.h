@@ -1,7 +1,7 @@
 #ifndef __INIT_WIFI__
 #define __INIT_WIFI__
 
-#include <string.h>
+#include "definitions.h"
 
 WiFiServer wifiServer(80);
 
@@ -11,28 +11,17 @@ struct WifiConfig {
 };
 
 const char *wifiName = "/wifiConfig.json";
-static WifiConfig wifiConfig;
+WifiConfig wifiConfig;
 bool isWifiConfigSet = false;
 
 void setWifiConfig(const char* ssid, const char* pwd) {
-  Serial.println("Reset ssid");
-  Serial.print("size of wifi.conf ssid: ");
-  Serial.println(sizeof(wifiConfig.ssid));
-  Serial.print("size of  ssid: ");
-  Serial.println(strlen(ssid));
   
   memset(wifiConfig.ssid, 0, MAX_STR_LEN);
-  Serial.println("Set new ssid");
   memcpy(wifiConfig.ssid, ssid, MAX_STR_LEN);
   
-  Serial.println("Reset pwd");
-  Serial.print("size of wifi.conf pwd: ");
-  Serial.println(strlen(wifiConfig.pwd));
-  Serial.print("size of  pwd: ");
-  Serial.println(strlen(pwd));
   memset(wifiConfig.pwd, 0, MAX_STR_LEN);
-  Serial.println("Set new pwd");
   memcpy(wifiConfig.pwd, pwd, MAX_STR_LEN);
+  
   isWifiConfigSet = true;      
 }
 
@@ -59,19 +48,13 @@ void loadWifiConfig(){
     wifiFile.readBytes(buf.get(), size);
     serialStr(buf.get());
     
-    //char* b = new char[size];
-    //memset(wifiConfig.ssid, '\0', size);
-    //wifiFile.readBytes(b, size);
-    //serialStr(b);
-    //delete[] b;
-
     DynamicJsonBuffer jsonBuffer;
     JsonObject& json = jsonBuffer.parseObject(buf.get());
-//    
+    
     if (json.success()) {
       Serial.println("Wifi Configuration");
       json.prettyPrintTo(Serial);
-      setWifiConfig(json["wifi_ssid"], json["wifi_pwd"]);
+      setWifiConfig(json[WIFI_CONFIG_SSID_KEY], json[WIFI_CONFIG_PWD_KEY]);
     } else {
       Serial.println("Wifi Configuration is corrupted");
     }
@@ -96,24 +79,16 @@ bool saveWifiConfig(const char* ssid, const char* pwd) {
   
   DynamicJsonBuffer jsonBuffer;
   JsonObject& json = jsonBuffer.createObject();
-//  
-  json["wifi_ssid"] = ssid;
-  json["wifi_pwd"] = pwd;      
-
-
-//  if(SPIFFS.exists(wifiName)) {
-//    SPIFFS.remove(wifiName);
-//    delay(250);
-//  }
   
+  json[WIFI_CONFIG_SSID_KEY] = ssid;
+  json[WIFI_CONFIG_PWD_KEY] = pwd;      
+
+
   File configFile = SPIFFS.open(wifiName, FILE_WRITE);
   if (configFile) {
     json.printTo(Serial);
     json.printTo(configFile);
     
-//    fileStr(configFile, ssid);
-//    fileStr(configFile, pwd);
-
     configFile.close();
     res = true;
   }
