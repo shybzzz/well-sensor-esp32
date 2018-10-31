@@ -1,6 +1,8 @@
 #ifndef __INIT_WIFI__
 #define __INIT_WIFI__
 
+#include "definitions.h"
+
 WiFiServer wifiServer(80);
 
 struct WifiConfig {
@@ -13,15 +15,22 @@ WifiConfig wifiConfig;
 bool isWifiConfigSet = false;
 
 void setWifiConfig(const char* ssid, const char* pwd) {
-  memset(wifiConfig.ssid, '\0', MAX_STR_LEN);
-  strlcpy(wifiConfig.ssid, ssid, MAX_STR_LEN);
-  memset(wifiConfig.pwd, '\0', MAX_STR_LEN);
-  strlcpy(wifiConfig.pwd, pwd, MAX_STR_LEN);
+  
+  memset(wifiConfig.ssid, 0, MAX_STR_LEN);
+  memcpy(wifiConfig.ssid, ssid, MAX_STR_LEN);
+  
+  memset(wifiConfig.pwd, 0, MAX_STR_LEN);
+  memcpy(wifiConfig.pwd, pwd, MAX_STR_LEN);
+  
   isWifiConfigSet = true;      
 }
 
 void loadWifiConfig(){
-  
+
+  if (!SPIFFS.begin()){
+    Serial.println("Failed to mount FS...");
+    return;
+  }
   if(!SPIFFS.exists(wifiName)){
     Serial.print(wifiName);
     Serial.println(" does not exist");
@@ -31,28 +40,24 @@ void loadWifiConfig(){
   File wifiFile = SPIFFS.open(wifiName);
   if (wifiFile) 
   {
+    Serial.println("Opened file");
     size_t size = wifiFile.size();
     Serial.println("Reading Wifi Config from Flash");
     
-//    std::unique_ptr<char[]> buf(new char[size]);
-//    wifiFile.readBytes(buf.get(), size);
-//    serialStr(buf.get());
+    std::unique_ptr<char[]> buf(new char[size]);
+    wifiFile.readBytes(buf.get(), size);
+    serialStr(buf.get());
     
-    char* b = new char[size];
-    memset(wifiConfig.ssid, '\0', size);
-    wifiFile.readBytes(b, size);
-    serialStr(b);
-
-//    DynamicJsonBuffer jsonBuffer;
-//    JsonObject& json = jsonBuffer.parseObject(buf.get());
-//    
-//    if (json.success()) {
-//      Serial.println("Wifi Configuration");
-//      json.prettyPrintTo(Serial);
-//      setWifiConfig(json["ssid"], json["pwd"]);
-//    } else {
-//      Serial.println("Wifi Configuration is corrupted");
-//    }
+    DynamicJsonBuffer jsonBuffer;
+    JsonObject& json = jsonBuffer.parseObject(buf.get());
+    
+    if (json.success()) {
+      Serial.println("Wifi Configuration");
+      json.prettyPrintTo(Serial);
+      setWifiConfig(json[WIFI_CONFIG_SSID_KEY], json[WIFI_CONFIG_PWD_KEY]);
+    } else {
+      Serial.println("Wifi Configuration is corrupted");
+    }
     
     wifiFile.close();
   } else {
@@ -72,26 +77,18 @@ bool saveWifiConfig(const char* ssid, const char* pwd) {
   
   bool res = false;
   
-//  DynamicJsonBuffer jsonBuffer;
-//  JsonObject& json = jsonBuffer.createObject();
-//  
-//  json["wifi_ssid"] = ssid;
-//  json["wifi_pwd"] = pwd;      
-
-
-  if(SPIFFS.exists(wifiName)) {
-    SPIFFS.remove(wifiName);
-    delay(250);
-  }
+  DynamicJsonBuffer jsonBuffer;
+  JsonObject& json = jsonBuffer.createObject();
   
+  json[WIFI_CONFIG_SSID_KEY] = ssid;
+  json[WIFI_CONFIG_PWD_KEY] = pwd;      
+
+
   File configFile = SPIFFS.open(wifiName, FILE_WRITE);
   if (configFile) {
-//    json.printTo(Serial);
-//    json.printTo(configFile);
+    json.printTo(Serial);
+    json.printTo(configFile);
     
-    fileStr(configFile, ssid);
-    fileStr(configFile, pwd);
-
     configFile.close();
     res = true;
   }
@@ -131,7 +128,7 @@ bool tryConnectWifi(char* ssid, char* pwd) {
   Serial.println(ssid);
 
   uint8_t attempts = 0;
-  while ((!isWifiConnected()) && attempts < WIFI_TIMEOUT) { // Wait for the Wi-Fi to connect
+  while (!isWifiConnected() && attempts < WIFI_TIMEOUT) { // Wait for the Wi-Fi to connect
      delay(500);
      Serial.print(".");
      attempts++;
@@ -149,7 +146,6 @@ bool tryConnectWifi(char* ssid, char* pwd) {
   } else {
     Serial.println();
     Serial.println("Failed to connect to wifi");
-    WiFi.disconnect();
   }
 
   return res;

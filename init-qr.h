@@ -9,8 +9,8 @@ struct QRConfig {
 QRConfig qrConfig;
 
 void initQr() {
-  strlcpy(qrConfig.AP_SSID, "Well Sensor", sizeof(qrConfig.AP_SSID));
-  strlcpy(qrConfig.AP_PWD, "11111111", sizeof(qrConfig.AP_PWD));    
+  strncpy(qrConfig.AP_SSID, "Well Sensor", sizeof(qrConfig.AP_SSID));
+  strncpy(qrConfig.AP_PWD, "11111111", sizeof(qrConfig.AP_PWD));    
 }
 
 #endif

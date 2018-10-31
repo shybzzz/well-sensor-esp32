@@ -10,9 +10,9 @@ bool readWifiConfig(WiFiClient& client) {
     memset(output[0], '\0', MAX_STR_LEN);
     memset(output[1], '\0', MAX_STR_LEN);
     res = parse(socketBuff, output);
+    
     if(res) {
       res = tryConnectWifi(output[0], output[1]);
-      
       if(res) {
         res = saveWifiConfig(output[0], output[1]);
         if(res) {

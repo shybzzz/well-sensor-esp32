@@ -60,7 +60,6 @@ void loop() {
 
   delay(250);
   client.stop();
-  
   dance(1000);
   
 }
