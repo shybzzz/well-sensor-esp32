@@ -41,6 +41,7 @@ void setup() {
 void loop() {
 
   if(buttonClicked) {
+    Serial.println("Hard Reset");
     formatFlash();
     return;
   }
@@ -55,6 +56,7 @@ void loop() {
 
   if(!isWifiConnected()) {
     yellowLight();
+    reconnectWifi();
     return;
   }
 

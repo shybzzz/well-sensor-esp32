@@ -151,4 +151,8 @@ bool tryConnectWifi(char* ssid, char* pwd) {
   return res;
 }
 
+bool reconnectWifi() {
+  return tryConnectWifi(wifiConfig.ssid, wifiConfig.pwd);
+}
+
 #endif
