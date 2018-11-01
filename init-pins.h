@@ -28,6 +28,12 @@ void yellowLight() {
   digitalWrite(LED_GREEN, HIGH);
 }
 
+void noLight() {
+  digitalWrite(LED_RED, LOW);
+  digitalWrite(LED_BLUE, LOW);
+  digitalWrite(LED_GREEN, LOW);
+}
+
 void dance(uint16_t d) { 
    
   digitalWrite(LED_RED, HIGH);

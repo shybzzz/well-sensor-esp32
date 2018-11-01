@@ -18,7 +18,6 @@ void formatFlash(){
   buttonClicked = false;
   
   Serial.println("Restarting Well Sensor...");
-  delay(1000);
   ESP.restart();  
   
 }
