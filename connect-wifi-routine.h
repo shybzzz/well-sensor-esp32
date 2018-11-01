@@ -16,10 +16,16 @@ bool readWifiConfig(WiFiClient& client) {
       if(res) {
         res = saveWifiConfig(output[0], output[1]);
         if(res) {
-          setWifiConfig(output[0], output[1]);  
+          setWifiConfig(output[0], output[1]);
+          Serial.println();
+          Serial.println("Sending Data...");
           client.write((uint8_t) SUCCESS_RESPONSE_HEADER);
           client.write(WIFI_CONFIG_SUCCESS_RESPONSE_HEADER);
-          client.write(WiFi.localIP().toString().c_str());
+          String ip = WiFi.localIP().toString();
+          Serial.println(ip);
+          client.print(ip);
+          Serial.println("Data sent to client");
+          delay(1500);
         }                
       } else {
         client.write(WIFI_CONNECTION_FAILED_RESPONSE_HEADER);

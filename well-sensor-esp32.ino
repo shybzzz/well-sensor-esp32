@@ -62,7 +62,7 @@ void loop() {
 
   noLight();
 
-  delay(250);
+  delay(750);
   client.stop();
   dance(1000);
   
