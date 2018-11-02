@@ -139,7 +139,6 @@ bool tryConnectWifi(char* ssid, char* pwd) {
     Serial.println("Connection established!");  
     Serial.print("IP address:\t");
     Serial.println(WiFi.localIP());
-    WiFi.softAPdisconnect();
     isWifiConfigSet = true;
     
     res = true;
