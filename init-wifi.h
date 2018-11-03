@@ -133,13 +133,13 @@ bool tryConnectWifi(char* ssid, char* pwd) {
      Serial.print(".");
      attempts++;
   }
-  
+
+  //!!! ip adress condition part does not work
   if (attempts < WIFI_TIMEOUT && isWifiConnected() && WiFi.localIP() != IPAddress(0, 0, 0, 0)) {
     Serial.println();
     Serial.println("Connection established!");  
     Serial.print("IP address:\t");
     Serial.println(WiFi.localIP());
-    WiFi.softAPdisconnect();
     isWifiConfigSet = true;
     
     res = true;
@@ -149,6 +149,10 @@ bool tryConnectWifi(char* ssid, char* pwd) {
   }
 
   return res;
+}
+
+bool reconnectWifi() {
+  return tryConnectWifi(wifiConfig.ssid, wifiConfig.pwd);
 }
 
 #endif
