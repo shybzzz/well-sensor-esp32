@@ -21,8 +21,8 @@ bool readWifiConfig(WiFiClient& client) {
           Serial.println("Sending Data...");
 
           memset(socketBuff, '\0', MAX_SOCKET_BUFF_SIZE);
-          memset(socketBuff, SUCCESS_RESPONSE_RESULT, 1);
-          memset(socketBuff + 1, WIFI_CONFIG_SUCCESS_RESPONSE_HEADER, 1);
+          socketBuff[0] = SUCCESS_RESPONSE_RESULT;
+          socketBuff[1] = WIFI_CONFIG_SUCCESS_RESPONSE_HEADER;
           const char* ip = WiFi.localIP().toString().c_str();
           strcpy(socketBuff + 2, ip);
 

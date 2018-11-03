@@ -11,7 +11,7 @@ void printSocketBuff() {
   Serial.println();
 }
 
-bool readSocket(WiFiClient& client, uint8_t dataType) {
+bool readSocket(WiFiClient& client, char dataType) {
   
   bool res = false;
   memset(socketBuff, '\0', MAX_SOCKET_BUFF_SIZE);
@@ -24,7 +24,7 @@ bool readSocket(WiFiClient& client, uint8_t dataType) {
     
     if (client.available()) {
       
-    byte msgType = client.read();
+    char msgType = client.read();
     Serial.print("received: ");
     Serial.println(msgType);
     if (msgType == dataType) {
