@@ -10,7 +10,7 @@ struct WifiConfig {
   char pwd[MAX_STR_LEN];
 };
 
-const char *wifiName = "/wifiConfig.json";
+const char *wifiFileName = "/wifiConfig.json";
 WifiConfig wifiConfig;
 bool isWifiConfigSet = false;
 
@@ -25,52 +25,24 @@ void setWifiConfig(const char* ssid, const char* pwd) {
   isWifiConfigSet = true;      
 }
 
-void loadWifiConfig(){
+bool loadWifiConfig(){
+  bool res = readFile(wifiFileName);
 
-  if (!SPIFFS.begin()){
-    Serial.println("Failed to mount FS...");
-    return;
-  }
-  if(!SPIFFS.exists(wifiName)){
-    Serial.print(wifiName);
-    Serial.println(" does not exist");
-    return;
-  }
-
-  File wifiFile = SPIFFS.open(wifiName);
-  if (wifiFile) 
-  {
-    Serial.println("Opened file");
-    size_t size = wifiFile.size();
-    Serial.println("Reading Wifi Config from Flash");
-    
-    std::unique_ptr<char[]> buf(new char[size]);
-    wifiFile.readBytes(buf.get(), size);
-    serialStr(buf.get());
-    
+  if(res) {
     DynamicJsonBuffer jsonBuffer;
-    JsonObject& json = jsonBuffer.parseObject(buf.get());
-    
-    if (json.success()) {
+    JsonObject& json = jsonBuffer.parseObject(fileBuff);
+    res = json.success();
+    if (res) {
       Serial.println("Wifi Configuration");
       json.prettyPrintTo(Serial);
       setWifiConfig(json[WIFI_CONFIG_SSID_KEY], json[WIFI_CONFIG_PWD_KEY]);
+      res = true;
     } else {
       Serial.println("Wifi Configuration is corrupted");
     }
-    
-    wifiFile.close();
-  } else {
-      Serial.println("Failed opening Wifi Configuration File");
   }
-  
-}
 
-void fileStr(File f, const char* str) {
-  for(int i = 0; i < strlen(str); i++) {
-    f.print(char(str[i]));
-  }
-  f.println();
+  return res;    
 }
 
 bool saveWifiConfig(const char* ssid, const char* pwd) {
@@ -84,7 +56,7 @@ bool saveWifiConfig(const char* ssid, const char* pwd) {
   json[WIFI_CONFIG_PWD_KEY] = pwd;      
 
 
-  File configFile = SPIFFS.open(wifiName, FILE_WRITE);
+  File configFile = SPIFFS.open(wifiFileName, FILE_WRITE);
   if (configFile) {
     json.printTo(Serial);
     json.printTo(configFile);
