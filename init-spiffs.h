@@ -32,4 +32,20 @@ bool readFile(const char* fileName) {
   return res;
 }
 
+bool saveJson(const char* fileName, JsonObject& json) {
+  bool res = false;
+  
+  File f = SPIFFS.open(fileName, FILE_WRITE);
+  if (f) {
+    json.printTo(f);    
+    f.close();
+    res = true;
+  } else {
+    Serial.print("Failed opening ");
+    Serial.println(fileName);
+  }
+  
+  return res;
+}
+
 #endif

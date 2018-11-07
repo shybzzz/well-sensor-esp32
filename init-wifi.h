@@ -33,8 +33,6 @@ bool loadWifiConfig(){
     JsonObject& json = jsonBuffer.parseObject(fileBuff);
     res = json.success();
     if (res) {
-      Serial.println("Wifi Configuration");
-      json.prettyPrintTo(Serial);
       setWifiConfig(json[WIFI_CONFIG_SSID_KEY], json[WIFI_CONFIG_PWD_KEY]);
       res = true;
     } else {
@@ -53,18 +51,13 @@ bool saveWifiConfig(const char* ssid, const char* pwd) {
   JsonObject& json = jsonBuffer.createObject();
   
   json[WIFI_CONFIG_SSID_KEY] = ssid;
-  json[WIFI_CONFIG_PWD_KEY] = pwd;      
-
-
-  File configFile = SPIFFS.open(wifiFileName, FILE_WRITE);
-  if (configFile) {
-    json.printTo(Serial);
-    json.printTo(configFile);
-    
-    configFile.close();
-    res = true;
-  }
+  json[WIFI_CONFIG_PWD_KEY] = pwd;
   
+  res = saveJson(wifiFileName, json);
+  
+  if(res) {
+    Serial.println("Wifi Config are saved");
+  }
   return res;
 }
 
