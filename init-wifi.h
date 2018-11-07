@@ -1,7 +1,7 @@
 #ifndef __INIT_WIFI__
 #define __INIT_WIFI__
 
-#include "definitions.h"
+//#include "definitions.h"
 
 WiFiServer wifiServer(80);
 
