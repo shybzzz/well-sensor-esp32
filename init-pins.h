@@ -18,41 +18,54 @@ void initPins() {
 
 void redLight() {
   digitalWrite(LED_RED, HIGH);
-  digitalWrite(LED_BLUE, LOW);
   digitalWrite(LED_GREEN, LOW);
+  digitalWrite(LED_BLUE, LOW);  
 }
 
 void yellowLight() {
   digitalWrite(LED_RED, HIGH);
-  digitalWrite(LED_BLUE, LOW);
   digitalWrite(LED_GREEN, HIGH);
+  digitalWrite(LED_BLUE, LOW);  
+}
+
+void greenLight() {
+  digitalWrite(LED_RED, LOW);
+  digitalWrite(LED_GREEN, HIGH);
+  digitalWrite(LED_BLUE, LOW);  
+}
+
+void blueLight() {
+  digitalWrite(LED_RED, LOW);
+  digitalWrite(LED_GREEN, LOW);
+  digitalWrite(LED_BLUE, HIGH);  
+}
+
+void violetLight() {
+  digitalWrite(LED_RED, HIGH);
+  digitalWrite(LED_GREEN, LOW);
+  digitalWrite(LED_BLUE, HIGH);  
 }
 
 void noLight() {
   digitalWrite(LED_RED, LOW);
-  digitalWrite(LED_BLUE, LOW);
   digitalWrite(LED_GREEN, LOW);
+  digitalWrite(LED_BLUE, LOW);  
 }
 
 void dance(uint16_t d) { 
    
-  digitalWrite(LED_RED, HIGH);
+  noLight();
   delay(d);
-  
-  digitalWrite(LED_BLUE, LOW);
+  redLight();
   delay(d);
-  
-  digitalWrite(LED_GREEN, HIGH);
+  yellowLight();
   delay(d);
-  
-  digitalWrite(LED_RED, LOW);
+  greenLight();
   delay(d);
-  
-  digitalWrite(LED_BLUE, HIGH);
+  blueLight();
   delay(d);
-  
-  digitalWrite(LED_GREEN, LOW);
-  delay(d);  
+  violetLight();
+  delay(d);
   
 }
 

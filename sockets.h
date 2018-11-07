@@ -1,6 +1,7 @@
 #ifndef __SOCKETS__
 #define __SOCKETS__
 
+#define MAX_SOCKET_BUFF_SIZE 1024u
 
 char socketBuff[MAX_SOCKET_BUFF_SIZE] = {0};
 
