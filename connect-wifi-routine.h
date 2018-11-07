@@ -14,7 +14,7 @@ bool readWifiConfig(WiFiClient& client) {
     if(res) {
       res = tryConnectWifi(output[0], output[1]);
       if(res) {
-//        res = saveWifiConfig(output[0], output[1]);
+        res = saveWifiConfig(output[0], output[1]);
         if(res) {
           setWifiConfig(output[0], output[1]);
           Serial.println();

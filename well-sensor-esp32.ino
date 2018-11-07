@@ -15,6 +15,7 @@ void serialStr(char* str) {
 #include "init-pins.h"
 #include "init-reset-button.h"
 #include "init-qr.h"
+#include "init-spiffs.h"
 #include "init-wifi.h"
 #include "parse.h"
 #include "sockets.h"
