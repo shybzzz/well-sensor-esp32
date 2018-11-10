@@ -90,7 +90,9 @@ bool isWifiConnected() {
 bool tryConnectWifi(char* ssid, char* pwd) {
   
   bool res = false;
-  
+
+  WiFi.disconnect();
+  delay(500);
   WiFi.begin(ssid, pwd);
   Serial.print("Connecting to ");
   Serial.println(ssid);
