@@ -19,7 +19,7 @@ void serialStr(char* str) {
 #include "init-reset-button.h"
 #include "parse.h"
 #include "sockets.h"
-#include "connect-wifi-routine.h"
+#include "listen-ap.h"
 
 void setup() {
 
@@ -52,7 +52,8 @@ void loop() {
 
   if(!isWifiConfigSet) {
     redLight();
-    readWifiConfig(client);
+    listenSetWifiConfig(client);
+    listenGetIp(client);
     return;    
   }
 
