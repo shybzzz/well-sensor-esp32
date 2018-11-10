@@ -13,10 +13,10 @@ void serialStr(char* str) {
 }
 
 #include "init-pins.h"
-#include "init-reset-button.h"
 #include "init-qr.h"
 #include "init-spiffs.h"
 #include "init-wifi.h"
+#include "init-reset-button.h"
 #include "parse.h"
 #include "sockets.h"
 #include "connect-wifi-routine.h"
@@ -42,8 +42,9 @@ void setup() {
 void loop() {
 
   if(buttonClicked) {
-    Serial.println("Hard Reset");
-    formatFlash();
+    isWifiConfigSet = !isWifiConfigSet;
+    buttonClicked = false;
+    restartWifi();
     return;
   }
 
