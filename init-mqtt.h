@@ -16,7 +16,17 @@ bool isMqttConfigSet = false;
 WiFiClient espClient;
 PubSubClient mqttClient(espClient);
 
-
+void mqttCallback(char* topic, byte* payload, size_t len){
+  
+  Serial.print("Message arrived: [");
+  Serial.print(topic);
+  Serial.print("] =");
+  for (size_t i = 0; i < len; ++i)
+  {
+    Serial.print(char(payload[i]));  
+  }
+  Serial.println();  
+}
 void setMqttConfig(const char* server, int port, const char* user, const char* pwd){
   
   memset(mqttConfig.server, 0, MAX_STR_LEN);
@@ -75,12 +85,32 @@ bool saveMqttConfig(const char* server, int port, const char* user, const char* 
 
 void initMqtt() {
 
-  //tbd: set mqtt callback
+  static bool connected = false;
+  //temporary mqtt configs. for testing...
+  setMqttConfig("m23.cloudmqtt.com", 12925,
+                "tlwhlgqr", "g-VQc5c6w7eN");
+
+  if (!connected){
+  mqttClient.setCallback(mqttCallback);
   loadMqttConfig();
   if (isMqttConfigSet){
+    
       mqttClient.setServer(mqttConfig.server, mqttConfig.port);
       Serial.println("Connecting to mqtt server...");  
-      mqttClient.connect(qrConfig.DEVICE_ID, mqttConfig.user, mqttConfig.pwd));
+      mqttClient.connect(qrConfig.DEVICE_ID, mqttConfig.user, mqttConfig.pwd);
+      if (mqttClient.connected())
+      {
+        Serial.println("Connected  to mqtt broker");  
+        mqttClient.subscribe("test");
+        connected = true;
+      }
+      else 
+      {
+          Serial.print("failed, rc = ");
+          Serial.println(mqttClient.state());
+          connected = false;
+      }
+    }
   }
 }
 #endif

@@ -20,6 +20,7 @@ void serialStr(char* str) {
 #include "parse.h"
 #include "sockets.h"
 #include "connect-wifi-routine.h"
+#include "init-mqtt.h"
 
 void setup() {
 
@@ -35,7 +36,7 @@ void setup() {
   initResetButton();
   initQr();
   initWifi();  
-
+  initMqtt();
   Serial.println("Well Sensor is running");
 }
 
@@ -67,5 +68,8 @@ void loop() {
   client.stop();
   dance(1000);
   //* tab starts here.
+  initMqtt();
+  mqttClient.loop();
+  
   
 }
