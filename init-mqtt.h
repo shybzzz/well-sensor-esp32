@@ -83,34 +83,34 @@ bool saveMqttConfig(const char* server, int port, const char* user, const char* 
   return res;
 }
 
+bool connectMqtt() {
+  bool res = false;
+  Serial.println("Connecting to mqtt server...");  
+  mqttClient.connect(qrConfig.DEVICE_ID, mqttConfig.user, mqttConfig.pwd);
+  if (mqttClient.connected()) {    
+    mqttClient.subscribe("test");      
+    res = true;
+    Serial.print("Connected  to mqtt broker ");
+    Serial.print(mqttConfig.server);
+    Serial.print(":");
+    Serial.println(mqttConfig.port);
+  } else {
+    Serial.print("failed, rc = ");
+    Serial.println(mqttClient.state());
+  }
+
+  return res;
+}
+
 void initMqtt() {
 
-  static bool connected = false;
-  //temporary mqtt configs. for testing...
-  setMqttConfig("m23.cloudmqtt.com", 12925,
-                "tlwhlgqr", "g-VQc5c6w7eN");
-
-  if (!connected){
   mqttClient.setCallback(mqttCallback);
+  
   loadMqttConfig();
-  if (isMqttConfigSet){
-    
-      mqttClient.setServer(mqttConfig.server, mqttConfig.port);
-      Serial.println("Connecting to mqtt server...");  
-      mqttClient.connect(qrConfig.DEVICE_ID, mqttConfig.user, mqttConfig.pwd);
-      if (mqttClient.connected())
-      {
-        Serial.println("Connected  to mqtt broker");  
-        mqttClient.subscribe("test");
-        connected = true;
-      }
-      else 
-      {
-          Serial.print("failed, rc = ");
-          Serial.println(mqttClient.state());
-          connected = false;
-      }
-    }
+  //temporary mqtt configs. for testing...
+  setMqttConfig("m13.cloudmqtt.com", 12730,"wnezdvgh", "ycm1xiuzX936");
+  if (isMqttConfigSet) {
+    mqttClient.setServer(mqttConfig.server, mqttConfig.port);    
   }
 }
 #endif
