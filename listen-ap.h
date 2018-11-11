@@ -15,8 +15,6 @@ bool sendIp(WiFiClient& client){
 
           delay(750);
           client.stop();
-          delay(4000);
-          WiFi.softAPdisconnect();
           Serial.println();
           Serial.println("Data sent to client");
 }
@@ -39,6 +37,8 @@ bool listenSetWifiConfig(WiFiClient& client) {
           setWifiConfig(output[0], output[1]);
           Serial.println();
           sendIp(client);
+          delay(4000);
+          WiFi.softAPdisconnect();
         }                
       } else {
         WiFi.disconnect();
