@@ -34,6 +34,14 @@ bool readFile(const char* fileName) {
 
 bool saveJson(const char* fileName, JsonObject& json) {
   bool res = false;
+
+  if(SPIFFS.exists(fileName)){
+    if(!SPIFFS.remove(fileName)) {
+      Serial.print("Failed Removing ");
+      Serial.println(fileName);
+      return res;
+    }
+  }
   
   File f = SPIFFS.open(fileName, FILE_WRITE);
   if (f) {
@@ -47,5 +55,6 @@ bool saveJson(const char* fileName, JsonObject& json) {
   
   return res;
 }
+
 
 #endif
