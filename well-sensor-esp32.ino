@@ -85,7 +85,16 @@ void loop() {
   mqttClient.loop();
   
   dance(100);
+
+  if (current_sample < SIZE) {
+    
+    data[current_sample++] = getNumber();
+    return;
+  }
   
-  
-  
+  int res = filterData();
+  char payload[5];
+  sprintf(payload, "%d", res);
+  mqttClient.publish("data", payload);
+  current_sample = 0;
 }

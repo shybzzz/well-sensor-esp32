@@ -109,7 +109,7 @@ void initMqtt() {
   
   loadMqttConfig();
   //temporary mqtt configs. for testing...
-  setMqttConfig("m13.cloudmqtt.com", 12730,"wnezdvgh", "ycm1xiuzX936");
+  setMqttConfig("m23.cloudmqtt.com", 12925,"tlwhlgqr", "g-VQc5c6w7eN");
   if (isMqttConfigSet) {
     mqttClient.setServer(mqttConfig.server, mqttConfig.port);    
   }
