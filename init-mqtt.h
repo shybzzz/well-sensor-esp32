@@ -88,7 +88,8 @@ bool connectMqtt() {
   Serial.println("Connecting to mqtt server...");  
   mqttClient.connect(qrConfig.DEVICE_ID, mqttConfig.user, mqttConfig.pwd);
   if (mqttClient.connected()) {    
-    mqttClient.subscribe("test");      
+    mqttClient.subscribe("test");   
+    mqttClient.publish("test", qrConfig.DEVICE_ID);   
     res = true;
     Serial.print("Connected  to mqtt broker ");
     Serial.print(mqttConfig.server);
