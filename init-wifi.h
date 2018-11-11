@@ -31,7 +31,7 @@ bool loadWifiConfig(){
     JsonObject& json = jsonBuffer.parseObject(fileBuff);
     res = json.success();
     if (res) {
-      setWifiConfig(json[WIFI_CONFIG_SSID_KEY], json[WIFI_CONFIG_PWD_KEY]);
+      setWifiConfig(json[WIFI_CONFIG_SSID], json[WIFI_CONFIG_PWD]);
       res = true;
     } else {
       Serial.println("Wifi Configuration is corrupted");
@@ -48,8 +48,8 @@ bool saveWifiConfig(const char* ssid, const char* pwd) {
   DynamicJsonBuffer jsonBuffer;
   JsonObject& json = jsonBuffer.createObject();
   
-  json[WIFI_CONFIG_SSID_KEY] = ssid;
-  json[WIFI_CONFIG_PWD_KEY] = pwd;
+  json[WIFI_CONFIG_SSID] = ssid;
+  json[WIFI_CONFIG_PWD] = pwd;
   
   res = saveJson(wifiFileName, json);
   
