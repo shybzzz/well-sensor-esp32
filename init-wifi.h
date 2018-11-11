@@ -1,8 +1,6 @@
 #ifndef __INIT_WIFI__
 #define __INIT_WIFI__
 
-//#include "definitions.h"
-
 WiFiServer wifiServer(80);
 
 struct WifiConfig {
@@ -61,9 +59,8 @@ bool saveWifiConfig(const char* ssid, const char* pwd) {
   return res;
 }
 
-void initWifi() {
-  
-  loadWifiConfig();
+
+void restartWifi() {
   if(isWifiConfigSet){
     Serial.println("Connecting Wifi...");
     if(WiFi.begin(wifiConfig.ssid, wifiConfig.pwd) != WL_CONNECTED){
@@ -77,6 +74,12 @@ void initWifi() {
 
   wifiServer.begin();
   Serial.println("Wifi Server is started");  
+}
+
+void initWifi() {
+  
+  loadWifiConfig();
+  restartWifi();
   
 }
 
@@ -87,7 +90,9 @@ bool isWifiConnected() {
 bool tryConnectWifi(char* ssid, char* pwd) {
   
   bool res = false;
-  
+
+  WiFi.disconnect();
+  delay(500);
   WiFi.begin(ssid, pwd);
   Serial.print("Connecting to ");
   Serial.println(ssid);

@@ -10,18 +10,6 @@ void IRAM_ATTR handleIntr()
   portEXIT_CRITICAL_ISR(&mux);  
 }
 
-void formatFlash(){
-  
-  Serial.println("Removing Stored Config...");
-  SPIFFS.format();
-
-  buttonClicked = false;
-  
-  Serial.println("Restarting Well Sensor...");
-  ESP.restart();  
-  
-}
-
 void initResetButton() {
   attachInterrupt(digitalPinToInterrupt(BTN_PIN), handleIntr, HIGH);
 }
