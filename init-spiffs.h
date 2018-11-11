@@ -16,7 +16,7 @@ bool readFile(const char* fileName) {
         size_t s = f.size();
         f.readBytes(fileBuff, s);
         f.close();
-        serialStr(fileBuff);
+        Serial.println(fileBuff);
         res = true;
       } else {
         Serial.println("Failed opening file");

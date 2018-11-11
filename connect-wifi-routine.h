@@ -27,7 +27,7 @@ bool readWifiConfig(WiFiClient& client) {
           strcpy(socketBuff + 2, ip);
 
           client.print(socketBuff);
-          serialStr(socketBuff);
+          Serial.println(socketBuff);
 
           delay(750);
           client.stop();
