@@ -2,7 +2,7 @@
 #include "SPIFFS.h"
 #include "WiFi.h"
 #include "ArduinoJson.h"
-
+#include "PubSubClient.h"
 #include "definitions.h"
 
 void serialStr(char* str) {
@@ -20,6 +20,7 @@ void serialStr(char* str) {
 #include "parse.h"
 #include "sockets.h"
 #include "connect-wifi-routine.h"
+#include "init-mqtt.h"
 
 void setup() {
 
@@ -35,7 +36,7 @@ void setup() {
   initResetButton();
   initQr();
   initWifi();  
-
+  initMqtt();
   Serial.println("Well Sensor is running");
 }
 
@@ -66,5 +67,9 @@ void loop() {
   delay(750);
   client.stop();
   dance(1000);
+  //* tab starts here.
+  initMqtt();
+  mqttClient.loop();
+  
   
 }
