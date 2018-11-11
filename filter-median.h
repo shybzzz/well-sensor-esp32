@@ -1,13 +1,14 @@
-#ifndef __DATA_MEDIAN__
-#define __DATA_MEDIAN__
+#ifndef __FILTER_MEDIAN__
+#define __FILTER_MEDIAN__
 
-double filterData()
+#include <algorithm>
+
+int filterData()
 {
-  double res = 0;
+  int res = 0;
 
   std::sort(data, data + SIZE);
 
-  double res = 0;
   if (SIZE % 2 == 0)
   {
       res = data[SIZE/2-1] + data[SIZE/2];
