@@ -21,6 +21,8 @@ void serialStr(char* str) {
 #include "sockets.h"
 #include "listen-ap.h"
 #include "init-mqtt.h"
+#include "data-median.h"
+#include "filter-median.h"
 
 void setup() {
 

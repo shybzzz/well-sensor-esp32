@@ -36,7 +36,7 @@ bool listenSetWifiConfig(WiFiClient& client) {
         if(res) {
           setWifiConfig(output[0], output[1]);
           Serial.println();
-<<<<<<< HEAD:connect-wifi-routine.h
+
           Serial.println("Sending Data...");
 
           memset(socketBuff, '\0', MAX_SOCKET_BUFF_SIZE);
@@ -50,9 +50,7 @@ bool listenSetWifiConfig(WiFiClient& client) {
 
           delay(750);
           client.stop();
-=======
           sendIp(client);
->>>>>>> master:listen-ap.h
           delay(4000);
           WiFi.softAPdisconnect();
         }                
