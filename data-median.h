@@ -1,11 +1,6 @@
 #ifndef __DATA_MEDIAN__
 #define __DATA_MEDIAN__
 
-#define SIZE 9u
-
-int data[SIZE];
-uint8_t current_sample = 0;
-
 void count(double* a, double* inter, int* key, size_t size_a, size_t size_inter)
 {
     for (size_t i = 0; i < size_a; ++i)
@@ -46,10 +41,7 @@ void genVector(int* x, double* ri, double* inter, int* out, size_t size_ri, size
         }
     }
 }
-size_t getSeed()
-{
-    return time(0);
-}
+
 void genRi(int k, double* ri)
 {
     srand(time(0));
@@ -59,7 +51,7 @@ void genRi(int k, double* ri)
     }
 }
 
-int getNumber()
+int getDiscreteNumber()
 {
   int res = 0;  
 
@@ -89,4 +81,16 @@ int getNumber()
 
   return local_data[n/2];
 }
+
+bool getSamples() {
+  
+  if (current_sample < SIZE) {
+    
+    data[current_sample++] = getDiscreteNumber();
+    return false;
+  }
+  current_sample = 0;
+  return true;  
+}
+
 #endif

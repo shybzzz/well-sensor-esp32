@@ -3,7 +3,7 @@
 
 #include <algorithm>
 
-int filterData()
+int filterMedian()
 {
   int res = 0;
 
@@ -20,4 +20,13 @@ int filterData()
   }
   return res;
 }
+
+void processSamples() {
+  
+  int res = filterMedian();
+  char payload[5];
+  sprintf(payload, "%d", res);
+  mqttClient.publish("data", payload);
+  current_sample = 0;  
+} 
 #endif

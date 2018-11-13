@@ -3,15 +3,8 @@
 #include "WiFi.h"
 #include "ArduinoJson.h"
 #include "PubSubClient.h"
+
 #include "definitions.h"
-
-void serialStr(char* str) {
-  for(int i = 0; i < strlen(str); i++) {
-    Serial.print(char(str[i]));
-  }
-  Serial.println();
-}
-
 #include "init-pins.h"
 #include "init-qr.h"
 #include "init-spiffs.h"
@@ -21,6 +14,7 @@ void serialStr(char* str) {
 #include "sockets.h"
 #include "listen-ap.h"
 #include "init-mqtt.h"
+#include "init-data.h"
 #include "data-median.h"
 #include "filter-median.h"
 
@@ -86,15 +80,8 @@ void loop() {
   
   dance(100);
 
-  if (current_sample < SIZE) {
-    
-    data[current_sample++] = getNumber();
-    return;
+  if (!getSamples()) {
+    return;  
   }
-  
-  int res = filterData();
-  char payload[5];
-  sprintf(payload, "%d", res);
-  mqttClient.publish("data", payload);
-  current_sample = 0;
+  processSamples();
 }
