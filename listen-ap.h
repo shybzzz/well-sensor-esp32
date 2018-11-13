@@ -1,22 +1,18 @@
 #ifndef __CONNECT_WIFI_ROUTINE__
 #define __CONNECT_WIFI_ROUTINE__
 
-bool sendIp(WiFiClient& client){
-  Serial.println("Sending Data...");
+void sendIpJson(WiFiClient& client) {
+  DynamicJsonBuffer jsonBuffer;
+  JsonObject& json = jsonBuffer.createObject();
 
-          memset(socketBuff, '\0', MAX_SOCKET_BUFF_SIZE);
-          socketBuff[0] = SUCCESS_RESPONSE_RESULT;
-          socketBuff[1] = WIFI_CONFIG_SUCCESS_RESPONSE_HEADER;
-          const char* ip = WiFi.localIP().toString().c_str();
-          strcpy(socketBuff + 2, ip);
+  json["ip"] = WiFi.localIP().toString();
+  json["ssid"] = wifiConfig.ssid;
 
-          client.print(socketBuff);
-          serialStr(socketBuff);
+  json.printTo(client);
 
-          delay(750);
-          client.stop();
-          Serial.println();
-          Serial.println("Data sent to client");
+  delay(1000);
+  client.stop();
+  Serial.println("Data sent to client");
 }
 
 bool listenSetWifiConfig(WiFiClient& client) {
@@ -35,10 +31,10 @@ bool listenSetWifiConfig(WiFiClient& client) {
         res = saveWifiConfig(output[0], output[1]);
         if(res) {
           setWifiConfig(output[0], output[1]);
-          Serial.println();
-          sendIp(client);
+          sendIpJson(client);
           delay(4000);
           WiFi.softAPdisconnect();
+          Serial.println("AP is stopped");
         }                
       } else {
         WiFi.disconnect();
@@ -58,7 +54,7 @@ bool listenGetIp(WiFiClient& client) {
   bool res = readSocket(client, GET_IP_REQUEST_HEADER);
 
   if(res) {
-    sendIp(client);
+    sendIpJson(client);
   }
 
   return res;
