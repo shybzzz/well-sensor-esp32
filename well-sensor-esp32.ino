@@ -18,7 +18,7 @@ void serialStr(char* str) {
 #include "init-wifi.h"
 #include "init-reset-button.h"
 #include "parse.h"
-#include "sockets.h"
+#include "init-sockets.h"
 #include "listen-ap.h"
 #include "init-mqtt.h"
 

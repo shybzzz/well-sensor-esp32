@@ -8,14 +8,7 @@ void sendIpJson(WiFiClient& client) {
   json["ip"] = WiFi.localIP().toString();
   json["ssid"] = wifiConfig.ssid;
 
-  memset(socketBuff, '\0', MAX_SOCKET_BUFF_SIZE);
-  delay(200);
-  json.printTo(socketBuff);
-  client.write(socketBuff, json.measureLength());
-
-  delay(1000);
-  client.stop();
-  Serial.println("Data sent to client");
+  writeJson(client, json);
 }
 
 bool listenSetWifiConfig(WiFiClient& client) {
