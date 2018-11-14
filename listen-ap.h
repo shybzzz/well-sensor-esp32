@@ -8,7 +8,10 @@ void sendIpJson(WiFiClient& client) {
   json["ip"] = WiFi.localIP().toString();
   json["ssid"] = wifiConfig.ssid;
 
-  json.printTo(client);
+  memset(socketBuff, '\0', MAX_SOCKET_BUFF_SIZE);
+  delay(200);
+  json.printTo(socketBuff);
+  client.write(socketBuff, json.measureLength());
 
   delay(1000);
   client.stop();
