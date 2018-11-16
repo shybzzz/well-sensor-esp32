@@ -109,9 +109,21 @@ void initMqtt() {
   
   loadMqttConfig();
   //temporary mqtt configs. for testing...
-  setMqttConfig("m23.cloudmqtt.com", 12925,"tlwhlgqr", "g-VQc5c6w7eN");
+  //setMqttConfig("m23.cloudmqtt.com", 12925,"tlwhlgqr", "g-VQc5c6w7eN");
+  setMqttConfig("m13.cloudmqtt.com", 12730,"wnezdvgh", "ycm1xiuzX936");
   if (isMqttConfigSet) {
     mqttClient.setServer(mqttConfig.server, mqttConfig.port);    
   }
 }
+
+void publishInt(const char* topic, int d) {
+  char payload[5];
+  sprintf(payload, "%d", d);
+  Serial.print("Topic: ");
+  Serial.println(topic);
+  Serial.print("Payload: ");
+  Serial.println(payload);
+  mqttClient.publish(topic, payload);
+}
+
 #endif

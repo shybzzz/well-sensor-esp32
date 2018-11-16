@@ -13,10 +13,11 @@
 #include "parse.h"
 #include "sockets.h"
 #include "listen-ap.h"
-#include "init-mqtt.h"
 #include "init-data.h"
 #include "data-median.h"
 #include "filter-median.h"
+#include "init-mqtt.h"
+#include "routine-data.h"
 
 void setup() {
 
@@ -60,8 +61,6 @@ void loop() {
     return;
   }
 
-  noLight();
-
   delay(750);
   client.stop();
 
@@ -75,13 +74,12 @@ void loop() {
     connectMqtt();
     return;
   }
-  
-  mqttClient.loop();
-  
-  dance(100);
 
-  if (!getSamples()) {
-    return;  
+  noLight();
+
+  if(runDataRoutine()){
+    dance(100);
   }
-  processSamples();
+ 
+  mqttClient.loop();  
 }
