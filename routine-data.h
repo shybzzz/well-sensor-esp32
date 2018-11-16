@@ -2,7 +2,9 @@
 #define __ROUTINE_DATA__
 
 void gatherData() {  
-  data[current_sample++] = getMedianData();
+  int d = getMedianData();
+  publishInt("data", d);
+  data[current_sample++] = d;
 }
 
 int processData() {
@@ -17,11 +19,7 @@ bool runDataRoutine() {
   if(current_sample<DATA_SIZE) {
     gatherData();
   } else {
-    char payload[5];
-    sprintf(payload, "%d", processData());
-    Serial.print("Data sent to MQTT: ");
-    Serial.println(payload);
-    mqttClient.publish("data", payload);
+    publishInt("filtered", processData());
     res = true;
   }
 

@@ -116,4 +116,14 @@ void initMqtt() {
   }
 }
 
+void publishInt(const char* topic, int d) {
+  char payload[5];
+  sprintf(payload, "%d", d);
+  Serial.print("Topic: ");
+  Serial.println(topic);
+  Serial.print("Payload: ");
+  Serial.println(payload);
+  mqttClient.publish(topic, payload);
+}
+
 #endif
