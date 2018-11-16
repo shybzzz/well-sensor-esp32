@@ -55,6 +55,21 @@ bool readSocket(WiFiClient& client, char dataType) {
   return res; 
 }
 
+bool writeJson(WiFiClient& client, JsonObject& json) {
+  
+  memset(socketBuff, '\0', MAX_SOCKET_BUFF_SIZE);
+  json.printTo(socketBuff);
+  client.write(socketBuff, json.measureLength());
+
+  delay(1000);
+  client.stop();
+  Serial.println("Data sent to client");
+  json.prettyPrintTo(Serial);
+  
+  return true;
+  
+}
+
 
 
 #endif

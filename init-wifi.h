@@ -87,7 +87,7 @@ bool isWifiConnected() {
   return WiFi.status() == WL_CONNECTED;
 }
 
-bool tryConnectWifi(char* ssid, char* pwd) {
+bool tryConnectWifi(const char* ssid, const char* pwd) {
   
   bool res = false;
 
@@ -95,7 +95,7 @@ bool tryConnectWifi(char* ssid, char* pwd) {
   delay(500);
   WiFi.begin(ssid, pwd);
   Serial.print("Connecting to ");
-  Serial.println(ssid);
+  Serial.print(ssid);
 
   uint8_t attempts = 0;
   while (!isWifiConnected() && attempts < WIFI_TIMEOUT) { // Wait for the Wi-Fi to connect
