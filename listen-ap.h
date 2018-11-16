@@ -11,7 +11,7 @@ bool sendIp(WiFiClient& client){
           strcpy(socketBuff + 2, ip);
 
           client.print(socketBuff);
-          serialStr(socketBuff);
+          Serial.println(socketBuff);
 
           delay(750);
           client.stop();
@@ -36,6 +36,20 @@ bool listenSetWifiConfig(WiFiClient& client) {
         if(res) {
           setWifiConfig(output[0], output[1]);
           Serial.println();
+
+          Serial.println("Sending Data...");
+
+          memset(socketBuff, '\0', MAX_SOCKET_BUFF_SIZE);
+          socketBuff[0] = SUCCESS_RESPONSE_RESULT;
+          socketBuff[1] = WIFI_CONFIG_SUCCESS_RESPONSE_HEADER;
+          const char* ip = WiFi.localIP().toString().c_str();
+          strcpy(socketBuff + 2, ip);
+
+          client.print(socketBuff);
+          Serial.println(socketBuff);
+
+          delay(750);
+          client.stop();
           sendIp(client);
           delay(4000);
           WiFi.softAPdisconnect();
