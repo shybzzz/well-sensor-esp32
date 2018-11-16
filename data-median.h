@@ -51,7 +51,7 @@ void genRi(int k, double* ri)
     }
 }
 
-int getDiscreteNumber()
+int getMedianData()
 {
   int res = 0;  
 
@@ -82,15 +82,6 @@ int getDiscreteNumber()
   return local_data[n/2];
 }
 
-bool getSamples() {
-  
-  if (current_sample < SIZE) {
-    
-    data[current_sample++] = getDiscreteNumber();
-    return false;
-  }
-  current_sample = 0;
-  return true;  
-}
+
 
 #endif

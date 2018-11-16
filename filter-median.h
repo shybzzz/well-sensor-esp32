@@ -7,26 +7,18 @@ int filterMedian()
 {
   int res = 0;
 
-  std::sort(data, data + SIZE);
+  std::sort(data, data + DATA_SIZE);
 
-  if (SIZE % 2 == 0)
+  if (DATA_SIZE % 2 == 0)
   {
-      res = data[SIZE/2-1] + data[SIZE/2];
+      res = data[DATA_SIZE_H-1] + data[DATA_SIZE_H];
       res /=2;
   }
   else
   {
-      res = data[SIZE/2];
+      res = data[DATA_SIZE_H];
   }
   return res;
 }
 
-void processSamples() {
-  
-  int res = filterMedian();
-  char payload[5];
-  sprintf(payload, "%d", res);
-  mqttClient.publish("data", payload);
-  current_sample = 0;  
-} 
 #endif
