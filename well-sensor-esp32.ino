@@ -3,15 +3,8 @@
 #include "WiFi.h"
 #include "ArduinoJson.h"
 #include "PubSubClient.h"
+
 #include "definitions.h"
-
-void serialStr(char* str) {
-  for(int i = 0; i < strlen(str); i++) {
-    Serial.print(char(str[i]));
-  }
-  Serial.println();
-}
-
 #include "init-pins.h"
 #include "init-qr.h"
 #include "init-spiffs.h"
@@ -19,7 +12,11 @@ void serialStr(char* str) {
 #include "init-reset-button.h"
 #include "init-sockets.h"
 #include "listen-ap.h"
+#include "init-data.h"
+#include "data-median.h"
+#include "filter-median.h"
 #include "init-mqtt.h"
+#include "routine-data.h"
 
 void setup() {
 
@@ -63,8 +60,6 @@ void loop() {
     return;
   }
 
-  noLight();
-
   delay(750);
   client.stop();
 
@@ -78,11 +73,12 @@ void loop() {
     connectMqtt();
     return;
   }
-  
-  mqttClient.loop();
-  
-  dance(100);
-  
-  
-  
+
+  noLight();
+
+  if(runDataRoutine()){
+    dance(100);
+  }
+ 
+  mqttClient.loop();  
 }

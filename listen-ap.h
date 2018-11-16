@@ -35,6 +35,7 @@ bool listenSetWifiConfig(WiFiClient& client) {
         if(res) {
           setWifiConfig(ssid, pwd);
           sendWifiConfig(client);
+          
           delay(4000);
           WiFi.softAPdisconnect();
           Serial.println();
