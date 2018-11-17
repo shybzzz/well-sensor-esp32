@@ -49,7 +49,7 @@ bool loadWifiConfig(){
   return res;    
 }
 
-bool saveWifiConfig(const char* ssid, const char* pwd) {
+bool saveWifiConfigToSPIFFS(const char* ssid, const char* pwd) {
   
   bool res = false;
   
@@ -131,6 +131,36 @@ bool tryConnectWifi(const char* ssid, const char* pwd) {
 
 bool reconnectWifi() {
   return tryConnectWifi(wifiConfig.ssid, wifiConfig.pwd);
+}
+
+int saveWifiConfig(JsonObject& json) {
+  int res = 0;
+  
+  if(
+      json.success()
+      && containsWifiConfig(json)
+  ) {        
+    const char* ssid = json[WIFI_CONFIG_SSID];
+    const char* pwd = json[WIFI_CONFIG_PWD];
+    if(tryConnectWifi(ssid, pwd)) {
+      if(saveWifiConfigToSPIFFS(ssid, pwd)) {
+        setWifiConfig(ssid, pwd);
+        Serial.println("Wifi is configured");
+      } else {
+        res = SAVE_WIFI_FAILED_RESPONSE_HEADER;
+        Serial.println("Saving wifiConfig failed");                
+      }
+    } else {
+      WiFi.disconnect();
+      res = WIFI_CONNECTION_FAILED_RESPONSE_HEADER;
+      Serial.println("Error. Could not connect to wifi with wifiConfig provided");
+    }
+  } else {
+    res = INVALID_WIFI_CONFIG_RESPONSE_HEADER;
+    Serial.println("Error. Invalid wifiConfig is received");
+  }
+  
+  return res;
 }
 
 #endif

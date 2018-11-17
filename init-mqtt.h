@@ -73,7 +73,7 @@ bool loadMqttConfig() {
   return res;
 }
 
-bool saveMqttConfig(const char* server, int port, const char* user, const char* pwd) {
+bool saveMqttConfigToSPIFFS(const char* server, int port, const char* user, const char* pwd) {
   
   bool res = false;  
 
@@ -141,6 +141,39 @@ bool tryConnectMqtt(const char* server, int port, const char* user, const char* 
   return 
     setMqttServer(server, port)
     && connectMqtt(user, pwd);
+}
+
+int saveMqttConfig(JsonObject& json) {
+  int res = 0;
+  
+  if(
+      json.success()
+      && containsMqttConfig(json)
+  ) {
+        
+    const char* server = json[MQTT_CONFIG_SERVER];
+    int port = json[MQTT_CONFIG_PORT];
+    const char* user = json[MQTT_CONFIG_USER];
+    const char* pwd = json[MQTT_CONFIG_PWD];
+    
+    if(tryConnectMqtt(server, port, user, pwd)) {
+      if(saveMqttConfigToSPIFFS(server, port, user, pwd)) {
+        setMqttConfig(server, port, user, pwd);
+        Serial.println("MQTT is configured");
+      } else {
+        res = SAVE_MQTT_FAILED_RESPONSE_HEADER;
+        Serial.println("Saving mqttConfig failed");                
+      }
+    } else {
+      res = MQTT_CONNECTION_FAILED_RESPONSE_HEADER;
+      Serial.println("Error. Could not connect to MQTT with mqttConfig provided");
+    }
+  } else {
+    res = INVALID_MQTT_CONFIG_RESPONSE_HEADER;
+    Serial.println("Error. Invalid wifiConfig is received");
+  }
+  
+  return res;
 }
 
 #endif

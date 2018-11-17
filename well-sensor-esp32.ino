@@ -52,8 +52,8 @@ void loop() {
 
   if(!isWifiConfigSet) {
     redLight();
-    listenSetWifiConfig(client);
-    listenGetWifiConfig(client);
+    listenSetConfig(client);
+    listenGetWifiInfo(client);
     return;    
   }
 

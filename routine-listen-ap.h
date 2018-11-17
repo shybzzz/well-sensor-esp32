@@ -1,7 +1,7 @@
 #ifndef __ROUTINE_LISTEN_AP__
 #define __ROUTINE_LISTEN_AP__
 
-bool sendWifiConfig(WiFiClient& client) {
+bool sendWifiInfo(WiFiClient& client) {
   
   DynamicJsonBuffer jsonBuffer;
   JsonObject& json = jsonBuffer.createObject();
@@ -12,64 +12,38 @@ bool sendWifiConfig(WiFiClient& client) {
   return writeJson(client, json);
 }
 
-bool listenSetWifiConfig(WiFiClient& client) {
+bool listenSetConfig(WiFiClient& client) {
   
   bool res = false;
 
-  if(readSocket(client, SET_WIFI_CONFIG_REQUEST_HEADER)) {
+  if(readSocket(client, SET_CONFIG_REQUEST_HEADER)) {
     DynamicJsonBuffer jsonBuffer;
     JsonObject& json = jsonBuffer.parseObject(socketBuff);
-    
-    if(
-      json.success()
-      && containsWifiConfig(json)
-      && containsMqttConfig(json)
-    ) {
-        
-      const char* ssid = json[WIFI_CONFIG_SSID];
-      const char* pwd = json[WIFI_CONFIG_PWD];
-      const char* server = json[MQTT_CONFIG_SERVER];
-      int port = json[MQTT_CONFIG_PORT];
-      const char* user = json[MQTT_CONFIG_USER];
-      const char* mqttPwd = json[MQTT_CONFIG_PWD];
-      
-      if(
-        tryConnectWifi(ssid, pwd)
-        && tryConnectMqtt(server, port, user, mqttPwd)
-      ) {
-        if(
-          saveWifiConfig(ssid, pwd)
-          && saveMqttConfig(server, port, user, mqttPwd)
-        ) {
-          setWifiConfig(ssid, pwd);
-          setMqttConfig(server, port, user, mqttPwd);          
-          sendWifiConfig(client);          
-          WiFi.softAPdisconnect();
-          res = true;
-          Serial.println();
-          Serial.println("AP is stopped");
-        } else {
-          Serial.println("Saving wificonfig failed");                
-        }
+
+    int saveWifiConfigRes = saveWifiConfig(json);
+    if(saveWifiConfigRes == 0) {
+      int saveMqttConfigRes = saveMqttConfig(json);
+      if(saveMqttConfigRes == 0) {
+        sendWifiInfo(client);          
+        WiFi.softAPdisconnect();
+        res = true;
+        Serial.println();
+        Serial.println("AP is stopped");
       } else {
-        WiFi.disconnect();
-        client.print(WIFI_CONNECTION_FAILED_RESPONSE_HEADER);
-        Serial.println("Error. Could not connect to wifi with wifiConfig provided");
+        client.print(saveWifiConfigRes);
       }
-      
     } else {
-      client.print(INVALID_WIFI_CONFIG_RESPONSE_HEADER);
-      Serial.println("Error. Invalid wifiConfig is received");
+      client.print(saveWifiConfigRes);
     }
   }
-
+  
   return res;
 }
 
-bool listenGetWifiConfig(WiFiClient& client) {  
+bool listenGetWifiInfo(WiFiClient& client) {  
   return 
     readSocket(client, GET_IP_REQUEST_HEADER)
-    && sendWifiConfig(client);
+    && sendWifiInfo(client);
 }
 
 #endif
