@@ -1,5 +1,5 @@
-#ifndef __CONNECT_WIFI_ROUTINE__
-#define __CONNECT_WIFI_ROUTINE__
+#ifndef __ROUTINE_LISTEN_AP__
+#define __ROUTINE_LISTEN_AP__
 
 bool sendWifiConfig(WiFiClient& client) {
   
@@ -14,30 +14,38 @@ bool sendWifiConfig(WiFiClient& client) {
 
 bool listenSetWifiConfig(WiFiClient& client) {
   
-  bool res = readSocket(client, SET_WIFI_CONFIG_REQUEST_HEADER);
+  bool res = false;
 
-  if(res) {
+  if(readSocket(client, SET_WIFI_CONFIG_REQUEST_HEADER)) {
     DynamicJsonBuffer jsonBuffer;
     JsonObject& json = jsonBuffer.parseObject(socketBuff);
-    res = 
-      json.success() && 
-      json.containsKey(WIFI_CONFIG_SSID) &&
-      json.containsKey(WIFI_CONFIG_PWD);
     
-    if(res) {
+    if(
+      json.success()
+      && containsWifiConfig(json)
+      && containsMqttConfig(json)
+    ) {
+        
       const char* ssid = json[WIFI_CONFIG_SSID];
       const char* pwd = json[WIFI_CONFIG_PWD];
-      res = tryConnectWifi(ssid, pwd);
+      const char* server = json[MQTT_CONFIG_SERVER];
+      int port = json[MQTT_CONFIG_PORT];
+      const char* user = json[MQTT_CONFIG_USER];
+      const char* mqttPwd = json[MQTT_CONFIG_PWD];
       
-      if(res) {
-        res = saveWifiConfig(ssid, pwd);
-        
-        if(res) {
+      if(
+        tryConnectWifi(ssid, pwd)
+        && tryConnectMqtt(server, port, user, mqttPwd)
+      ) {
+        if(
+          saveWifiConfig(ssid, pwd)
+          && saveMqttConfig(server, port, user, mqttPwd)
+        ) {
           setWifiConfig(ssid, pwd);
-          sendWifiConfig(client);
-          
-          delay(4000);
+          setMqttConfig(server, port, user, mqttPwd);          
+          sendWifiConfig(client);          
           WiFi.softAPdisconnect();
+          res = true;
           Serial.println();
           Serial.println("AP is stopped");
         } else {
@@ -60,8 +68,8 @@ bool listenSetWifiConfig(WiFiClient& client) {
 
 bool listenGetWifiConfig(WiFiClient& client) {  
   return 
-    readSocket(client, GET_IP_REQUEST_HEADER) &&
-    sendWifiConfig(client);
+    readSocket(client, GET_IP_REQUEST_HEADER)
+    && sendWifiConfig(client);
 }
 
 #endif

@@ -16,12 +16,12 @@
 #define WIFI_CONNECTION_FAILED_RESPONSE_HEADER '2'
 
 #define WIFI_CONFIG_SSID ("ssid")
-#define WIFI_CONFIG_PWD ("pwd")
+#define WIFI_CONFIG_PWD ("ssidPwd")
 
 //MQTT
 
 #define MQTT_CONFIG_SERVER ("server")
 #define MQTT_CONFIG_PORT ("port")
 #define MQTT_CONFIG_USER ("user")
-#define MQTT_CONFIG_PWD ("pwd")
+#define MQTT_CONFIG_PWD ("mqttPwd")
 #endif

@@ -23,14 +23,22 @@ void setWifiConfig(const char* ssid, const char* pwd) {
   isWifiConfigSet = true;      
 }
 
-bool loadWifiConfig(){
-  bool res = readFile(wifiFileName);
+bool containsWifiConfig(JsonObject&json) {
+  return 
+    json.containsKey(WIFI_CONFIG_SSID)
+    && json.containsKey(WIFI_CONFIG_PWD);
+}
 
-  if(res) {
+bool loadWifiConfig(){
+  bool res = false;
+
+  if(readFile(wifiFileName)) {
     DynamicJsonBuffer jsonBuffer;
     JsonObject& json = jsonBuffer.parseObject(fileBuff);
-    res = json.success();
-    if (res) {
+    if (
+      json.success()
+      && containsWifiConfig(json)
+      ) {
       setWifiConfig(json[WIFI_CONFIG_SSID], json[WIFI_CONFIG_PWD]);
       res = true;
     } else {

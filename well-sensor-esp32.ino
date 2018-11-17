@@ -5,17 +5,20 @@
 #include "PubSubClient.h"
 
 #include "definitions.h"
+
 #include "init-pins.h"
 #include "init-qr.h"
 #include "init-spiffs.h"
 #include "init-wifi.h"
 #include "init-reset-button.h"
 #include "init-sockets.h"
-#include "routine-listen-ap.h"
 #include "init-data.h"
+#include "init-mqtt.h"
+
 #include "data-median.h"
 #include "filter-median.h"
-#include "init-mqtt.h"
+
+#include "routine-listen-ap.h"
 #include "routine-data.h"
 
 void setup() {
@@ -70,7 +73,7 @@ void loop() {
 
   if(!mqttClient.connected()) {
     blueLight();
-    connectMqtt();
+    reconnectMqtt();
     return;
   }
 

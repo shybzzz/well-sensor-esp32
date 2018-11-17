@@ -43,15 +43,25 @@ void setMqttConfig(const char* server, int port, const char* user, const char* p
   isMqttConfigSet = true;
 }
 
-bool loadMqttConfig(){
-  
-  bool res = readFile(mqttFileName);
+bool containsMqttConfig(JsonObject& json) {
+  return
+    json.containsKey(MQTT_CONFIG_SERVER)
+    && json.containsKey(MQTT_CONFIG_PORT)
+    && json.containsKey(MQTT_CONFIG_USER)
+    && json.containsKey(MQTT_CONFIG_PWD);
+}
 
-  if (res) {
+bool loadMqttConfig() {
+  
+  bool res = false;
+
+  if (readFile(mqttFileName)) {
       DynamicJsonBuffer jsonBuffer;
       JsonObject& json = jsonBuffer.parseObject(fileBuff);
-      res = json.success();
-      if (res) {
+      if (
+        json.success()
+        && containsMqttConfig(json)
+      ) {
         setMqttConfig(json[MQTT_CONFIG_SERVER], json[MQTT_CONFIG_PORT], 
                       json[MQTT_CONFIG_USER], json[MQTT_CONFIG_PWD]);
         res = true; 
@@ -75,26 +85,20 @@ bool saveMqttConfig(const char* server, int port, const char* user, const char* 
   json[MQTT_CONFIG_USER] = user;
   json[MQTT_CONFIG_PWD] = pwd;
 
-  res = saveJson(mqttFileName, json);
-
-  if (res) {
+  if (saveJson(mqttFileName, json)) {
+    res = true;
     Serial.println("Mqtt configs are saved.");  
   }
   return res;
 }
 
-bool connectMqtt() {
+bool connectMqtt(const char* user, const char* pwd){
   bool res = false;
-  Serial.println("Connecting to mqtt server...");  
-  mqttClient.connect(qrConfig.DEVICE_ID, mqttConfig.user, mqttConfig.pwd);
+      
+  mqttClient.connect(qrConfig.DEVICE_ID, user, pwd);
   if (mqttClient.connected()) {    
-    mqttClient.subscribe("test");   
-    mqttClient.publish("test", qrConfig.DEVICE_ID);   
     res = true;
-    Serial.print("Connected  to mqtt broker ");
-    Serial.print(mqttConfig.server);
-    Serial.print(":");
-    Serial.println(mqttConfig.port);
+    Serial.print("Connected to mqtt broker");    
   } else {
     Serial.print("failed, rc = ");
     Serial.println(mqttClient.state());
@@ -103,27 +107,40 @@ bool connectMqtt() {
   return res;
 }
 
-void initMqtt() {
+bool reconnectMqtt() {
+  return connectMqtt(mqttConfig.user, mqttConfig.pwd);
+}
 
-  mqttClient.setCallback(mqttCallback);
-  
-  loadMqttConfig();
-  //temporary mqtt configs. for testing...
-  //setMqttConfig("m23.cloudmqtt.com", 12925,"tlwhlgqr", "g-VQc5c6w7eN");
-  setMqttConfig("m13.cloudmqtt.com", 12730,"wnezdvgh", "ycm1xiuzX936");
+bool setMqttServer(const char* server, int port){
+  bool res = false;
   if (isMqttConfigSet) {
     mqttClient.setServer(mqttConfig.server, mqttConfig.port);    
+    res = true;
+    Serial.print("Mqtt server: ");  
+    Serial.print(server);
+    Serial.print(":");
+    Serial.println(port);
   }
+  return res;
+ 
+}
+
+void initMqtt() {
+  mqttClient.setCallback(mqttCallback);  
+  loadMqttConfig();
+  setMqttServer(mqttConfig.server, mqttConfig.port);
 }
 
 void publishInt(const char* topic, int d) {
   char payload[5];
   sprintf(payload, "%d", d);
-  Serial.print("Topic: ");
-  Serial.println(topic);
-  Serial.print("Payload: ");
-  Serial.println(payload);
   mqttClient.publish(topic, payload);
+}
+
+bool tryConnectMqtt(const char* server, int port, const char* user, const char* pwd){
+  return 
+    setMqttServer(server, port)
+    && connectMqtt(user, pwd);
 }
 
 #endif
