@@ -49,15 +49,8 @@ void loop() {
     return;
   }
 
-  WiFiClient client = wifiServer.available();
-
-  if(isAPRunning) {
-    listenSetConfig(client);
-    listenGetWifiInfo(client);
-  }
-
-  delay(750);
-  client.stop();
+  
+  listenServer();
 
   if(!isWifiConfigSet) {
     redLight();    

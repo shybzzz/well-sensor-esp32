@@ -30,7 +30,7 @@ bool listenSetConfig(WiFiClient& client) {
         Serial.println();
         Serial.println("AP is stopped");
       } else {
-        client.print(saveWifiConfigRes);
+        client.print(saveMqttConfigRes);
       }
     } else {
       client.print(saveWifiConfigRes);
@@ -46,10 +46,16 @@ bool listenGetWifiInfo(WiFiClient& client) {
     && sendWifiInfo(client);
 }
 
-void listenClient() {
+void listenServer() {
   WiFiClient client = wifiServer.available();
-
-  
+  if(isClientConnected(client)) {
+    if(isAPRunning) {
+      listenSetConfig(client);
+      listenGetWifiInfo(client);
+    }
+  }
+  delay(500);
+  client.stop();
 }
 
 #endif
