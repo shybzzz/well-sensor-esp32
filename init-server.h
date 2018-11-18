@@ -17,11 +17,12 @@ void printSocketBuff() {
 
 bool readSocket(WiFiClient& client, char dataType) {
   bool res = false;
+  uint16_t msgLength = client.available();
   
-  if(dataType == requestHeader) {
+  if(msgLength > 0 && dataType == requestHeader) {
     memset(socketBuff, '\0', MAX_SOCKET_BUFF_SIZE);
     char* tmp = nullptr;
-    uint16_t msgLength = client.available();        
+            
     tmp = new char[msgLength];
     client.read(reinterpret_cast<uint8_t*>(tmp), msgLength);
     memcpy(socketBuff , tmp, msgLength);
