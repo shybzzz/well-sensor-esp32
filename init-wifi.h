@@ -1,8 +1,6 @@
 #ifndef __INIT_WIFI__
 #define __INIT_WIFI__
 
-WiFiServer wifiServer(80);
-
 struct WifiConfig {
   char ssid[MAX_STR_LEN];
   char pwd[MAX_STR_LEN];
@@ -11,6 +9,7 @@ struct WifiConfig {
 const char *wifiFileName = "/wifiConfig.json";
 WifiConfig wifiConfig;
 bool isWifiConfigSet = false;
+bool isAPRunning = false;
 
 void setWifiConfig(const char* ssid, const char* pwd) {
   
@@ -67,27 +66,30 @@ bool saveWifiConfigToSPIFFS(const char* ssid, const char* pwd) {
   return res;
 }
 
-
-void restartWifi() {
-  if(isWifiConfigSet){
-    Serial.println("Connecting Wifi...");
-    if(WiFi.begin(wifiConfig.ssid, wifiConfig.pwd) != WL_CONNECTED){
-      Serial.println("Wifi is not connected");
-    }
-  } else {
-    Serial.println("Starting Access Point");
-    WiFi.softAP(qrConfig.AP_SSID, qrConfig.AP_PWD);
-    Serial.println(WiFi.softAPIP());
-  }
-
+void startAP() {
+  Serial.println("Starting Access Point");
+  WiFi.softAP(qrConfig.AP_SSID, qrConfig.AP_PWD);
   wifiServer.begin();
-  Serial.println("Wifi Server is started");  
+  isAPRunning = true;
+  Serial.println(WiFi.softAPIP());
 }
+
+void stopAP() {
+  WiFi.softAPdisconnect();
+  isAPRunning = false;
+  Serial.println("Access Point is stopped");
+}
+
 
 void initWifi() {
   
   loadWifiConfig();
-  restartWifi();
+  if(isWifiConfigSet) {
+    wifiServer.begin();
+    WiFi.begin(wifiConfig.ssid, wifiConfig.pwd);
+  } else {
+    startAP();
+  }
   
 }
 

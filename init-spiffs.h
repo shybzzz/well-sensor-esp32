@@ -55,5 +55,18 @@ bool saveJson(const char* fileName, JsonObject& json) {
   return res;
 }
 
+bool initSPIFSS() {
+  bool res = false;
+
+  if(SPIFFS.begin()) {
+    res = true;
+    Serial.println("File System is mounted");
+  } else {
+    Serial.println("Failed to Mount File System");
+  }
+
+  return res;
+}
+
 
 #endif

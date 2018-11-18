@@ -25,7 +25,7 @@ bool listenSetConfig(WiFiClient& client) {
       int saveMqttConfigRes = saveMqttConfig(json);
       if(saveMqttConfigRes == 0) {
         sendWifiInfo(client);          
-        WiFi.softAPdisconnect();
+        
         res = true;
         Serial.println();
         Serial.println("AP is stopped");
@@ -44,6 +44,12 @@ bool listenGetWifiInfo(WiFiClient& client) {
   return 
     readSocket(client, GET_IP_REQUEST_HEADER)
     && sendWifiInfo(client);
+}
+
+void listenClient() {
+  WiFiClient client = wifiServer.available();
+
+  
 }
 
 #endif

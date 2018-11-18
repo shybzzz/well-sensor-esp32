@@ -3,7 +3,9 @@
 
 #define MAX_SOCKET_BUFF_SIZE 1024u
 
+WiFiServer wifiServer(80);
 char socketBuff[MAX_SOCKET_BUFF_SIZE] = {0};
+bool isAPMode = false;
 
 void printSocketBuff() {
   for(int i=0; i < MAX_SOCKET_BUFF_SIZE; i++) {
@@ -69,7 +71,5 @@ bool writeJson(WiFiClient& client, JsonObject& json) {
   return true;
   
 }
-
-
 
 #endif
