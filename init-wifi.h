@@ -135,8 +135,8 @@ bool reconnectWifi() {
   return tryConnectWifi(wifiConfig.ssid, wifiConfig.pwd);
 }
 
-int saveWifiConfig(JsonObject& json) {
-  int res = 0;
+uint8_t saveWifiConfig(JsonObject& json) {
+  uint8_t res = 0;
   
   if(
       json.success()

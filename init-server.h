@@ -6,7 +6,7 @@
 WiFiServer wifiServer(80);
 char socketBuff[MAX_SOCKET_BUFF_SIZE] = {0};
 bool isAPMode = false;
-char requestHeader;
+uint8_t requestHeader;
 
 void printSocketBuff() {
   for(int i=0; i < MAX_SOCKET_BUFF_SIZE; i++) {
@@ -15,7 +15,7 @@ void printSocketBuff() {
   Serial.println();
 }
 
-bool readSocket(WiFiClient& client, char dataType) {
+bool readSocket(WiFiClient& client, uint8_t dataType) {
   bool res = false;
   uint16_t msgLength = client.available();
   

@@ -20,9 +20,9 @@ bool listenSetConfig(WiFiClient& client) {
     DynamicJsonBuffer jsonBuffer;
     JsonObject& json = jsonBuffer.parseObject(socketBuff);
 
-    int saveWifiConfigRes = saveWifiConfig(json);
+    uint8_t saveWifiConfigRes = saveWifiConfig(json);
     if(saveWifiConfigRes == 0) {
-      int saveMqttConfigRes = saveMqttConfig(json);
+      uint8_t saveMqttConfigRes = saveMqttConfig(json);
       if(saveMqttConfigRes == 0) {
         sendWifiInfo(client);          
         
