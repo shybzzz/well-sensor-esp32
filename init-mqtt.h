@@ -170,7 +170,7 @@ uint8_t saveMqttConfig(JsonObject& json) {
     }
   } else {
     res = INVALID_MQTT_CONFIG_RESPONSE_HEADER;
-    Serial.println("Error. Invalid wifiConfig is received");
+    Serial.println("Error. Invalid mqttConfig is received");
   }
   
   return res;

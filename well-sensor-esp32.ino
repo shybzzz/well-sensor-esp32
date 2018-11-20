@@ -45,12 +45,16 @@ void loop() {
     isAPRunning
       ? stopAP()
       : startAP();
-    buttonClicked = false;
+    buttonClicked = false;    
     return;
   }
 
-  
   listenServer();
+
+  if(isAPRunning) {
+    whiteLight();
+    return;
+  }
 
   if(!isWifiConfigSet) {
     redLight();    
