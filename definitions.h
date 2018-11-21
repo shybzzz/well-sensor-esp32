@@ -3,6 +3,7 @@
 
 #define MAX_STR_LEN                                 64u
 #define WIFI_TIMEOUT                                8u
+#define MQTT_TIMEOUT                                1u
 
 // TCP Request headers
 #define SET_WIFI_CONFIG_REQUEST_HEADER              1u

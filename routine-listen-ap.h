@@ -25,7 +25,8 @@ bool listenSetConfig(WiFiClient& client) {
       uint8_t saveMqttConfigRes = saveMqttConfig(json);
       if(saveMqttConfigRes == 0) {
         sendWifiInfo(client);          
-        
+        delay(500);
+        stopAP();
         res = true;
         Serial.println();
         Serial.println("AP is stopped");

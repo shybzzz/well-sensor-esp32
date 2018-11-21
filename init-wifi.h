@@ -76,6 +76,7 @@ void startAP() {
 
 void stopAP() {
   WiFi.softAPdisconnect();
+  wifiServer.begin();
   isAPRunning = false;
   Serial.println("Access Point is stopped");
 }
@@ -113,18 +114,16 @@ bool tryConnectWifi(const char* ssid, const char* pwd) {
      Serial.print(".");
      attempts++;
   }
+  Serial.println();
 
   //!!! ip adress condition part does not work
   if (attempts < WIFI_TIMEOUT && isWifiConnected() && WiFi.localIP() != IPAddress(0, 0, 0, 0)) {
-    Serial.println();
+    isWifiConfigSet = true;
+    res = true;
     Serial.println("Connection established!");  
     Serial.print("IP address:\t");
     Serial.println(WiFi.localIP());
-    isWifiConfigSet = true;
-    
-    res = true;
   } else {
-    Serial.println();
     Serial.println("Failed to connect to wifi");
   }
 

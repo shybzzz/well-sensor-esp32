@@ -41,6 +41,7 @@ bool writeJson(WiFiClient& client, JsonObject& json) {
   client.write(socketBuff, json.measureLength());
   Serial.println("Data sent to client");
   json.prettyPrintTo(Serial);
+  Serial.println();
   
   return true;
   

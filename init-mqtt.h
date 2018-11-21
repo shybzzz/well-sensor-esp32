@@ -98,7 +98,7 @@ bool connectMqtt(const char* user, const char* pwd){
   mqttClient.connect(qrConfig.DEVICE_ID, user, pwd);
   if (mqttClient.connected()) {    
     res = true;
-    Serial.print("Connected to mqtt broker");    
+    Serial.println("Connected to mqtt broker");    
   } else {
     Serial.print("failed, rc = ");
     Serial.println(mqttClient.state());
@@ -111,24 +111,21 @@ bool reconnectMqtt() {
   return connectMqtt(mqttConfig.user, mqttConfig.pwd);
 }
 
-bool setMqttServer(const char* server, int port){
-  bool res = false;
-  if (isMqttConfigSet) {
-    mqttClient.setServer(mqttConfig.server, mqttConfig.port);    
-    res = true;
-    Serial.print("Mqtt server: ");  
-    Serial.print(server);
-    Serial.print(":");
-    Serial.println(port);
-  }
-  return res;
- 
+void setMqttServer(const char* server, int port){
+  delay(500);
+  mqttClient.setServer(server, port);
+  Serial.print("Mqtt server: ");  
+  Serial.print(server);
+  Serial.print(":");
+  Serial.println(port); 
 }
 
 void initMqtt() {
   mqttClient.setCallback(mqttCallback);  
   loadMqttConfig();
-  setMqttServer(mqttConfig.server, mqttConfig.port);
+  if(isMqttConfigSet){
+    setMqttServer(mqttConfig.server, mqttConfig.port);
+  }  
 }
 
 void publishInt(const char* topic, int d) {
@@ -138,9 +135,23 @@ void publishInt(const char* topic, int d) {
 }
 
 bool tryConnectMqtt(const char* server, int port, const char* user, const char* pwd){
-  return 
-    setMqttServer(server, port)
-    && connectMqtt(user, pwd);
+  bool res = false;
+  setMqttServer(server, port);
+  uint8_t attempts = 0;
+  Serial.println("Connecting Mqtt");
+  while (!connectMqtt(user, pwd) && attempts < MQTT_TIMEOUT) {
+     delay(500);
+     attempts++;
+  }
+
+  if (attempts < MQTT_TIMEOUT) {
+    isWifiConfigSet = true;
+    res = true;
+    Serial.println("MQTT Connected");
+  } else {
+    Serial.println("Failed to connect MQTT");
+  }
+  return res;
 }
 
 uint8_t saveMqttConfig(JsonObject& json) {
