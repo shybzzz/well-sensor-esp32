@@ -43,15 +43,25 @@ void setMqttConfig(const char* server, int port, const char* user, const char* p
   isMqttConfigSet = true;
 }
 
-bool loadMqttConfig(){
-  
-  bool res = readFile(mqttFileName);
+bool containsMqttConfig(JsonObject& json) {
+  return
+    json.containsKey(MQTT_CONFIG_SERVER)
+    && json.containsKey(MQTT_CONFIG_PORT)
+    && json.containsKey(MQTT_CONFIG_USER)
+    && json.containsKey(MQTT_CONFIG_PWD);
+}
 
-  if (res) {
+bool loadMqttConfig() {
+  
+  bool res = false;
+
+  if (readFile(mqttFileName)) {
       DynamicJsonBuffer jsonBuffer;
       JsonObject& json = jsonBuffer.parseObject(fileBuff);
-      res = json.success();
-      if (res) {
+      if (
+        json.success()
+        && containsMqttConfig(json)
+      ) {
         setMqttConfig(json[MQTT_CONFIG_SERVER], json[MQTT_CONFIG_PORT], 
                       json[MQTT_CONFIG_USER], json[MQTT_CONFIG_PWD]);
         res = true; 
@@ -63,7 +73,7 @@ bool loadMqttConfig(){
   return res;
 }
 
-bool saveMqttConfig(const char* server, int port, const char* user, const char* pwd) {
+bool saveMqttConfigToSPIFFS(const char* server, int port, const char* user, const char* pwd) {
   
   bool res = false;  
 
@@ -75,26 +85,20 @@ bool saveMqttConfig(const char* server, int port, const char* user, const char* 
   json[MQTT_CONFIG_USER] = user;
   json[MQTT_CONFIG_PWD] = pwd;
 
-  res = saveJson(mqttFileName, json);
-
-  if (res) {
+  if (saveJson(mqttFileName, json)) {
+    res = true;
     Serial.println("Mqtt configs are saved.");  
   }
   return res;
 }
 
-bool connectMqtt() {
+bool connectMqtt(const char* user, const char* pwd){
   bool res = false;
-  Serial.println("Connecting to mqtt server...");  
-  mqttClient.connect(qrConfig.DEVICE_ID, mqttConfig.user, mqttConfig.pwd);
+      
+  mqttClient.connect(qrConfig.DEVICE_ID, user, pwd);
   if (mqttClient.connected()) {    
-    mqttClient.subscribe("test");   
-    mqttClient.publish("test", qrConfig.DEVICE_ID);   
     res = true;
-    Serial.print("Connected  to mqtt broker ");
-    Serial.print(mqttConfig.server);
-    Serial.print(":");
-    Serial.println(mqttConfig.port);
+    Serial.println("Connected to mqtt broker");    
   } else {
     Serial.print("failed, rc = ");
     Serial.println(mqttClient.state());
@@ -103,27 +107,84 @@ bool connectMqtt() {
   return res;
 }
 
-void initMqtt() {
+bool reconnectMqtt() {
+  return connectMqtt(mqttConfig.user, mqttConfig.pwd);
+}
 
-  mqttClient.setCallback(mqttCallback);
-  
+void setMqttServer(const char* server, int port){
+  delay(500);
+  mqttClient.setServer(server, port);
+  Serial.print("Mqtt server: ");  
+  Serial.print(server);
+  Serial.print(":");
+  Serial.println(port); 
+}
+
+void initMqtt() {
+  mqttClient.setCallback(mqttCallback);  
   loadMqttConfig();
-  //temporary mqtt configs. for testing...
-  //setMqttConfig("m23.cloudmqtt.com", 12925,"tlwhlgqr", "g-VQc5c6w7eN");
-  setMqttConfig("m13.cloudmqtt.com", 12730,"wnezdvgh", "ycm1xiuzX936");
-  if (isMqttConfigSet) {
-    mqttClient.setServer(mqttConfig.server, mqttConfig.port);    
-  }
+  if(isMqttConfigSet){
+    setMqttServer(mqttConfig.server, mqttConfig.port);
+  }  
 }
 
 void publishInt(const char* topic, int d) {
   char payload[5];
   sprintf(payload, "%d", d);
-  Serial.print("Topic: ");
-  Serial.println(topic);
-  Serial.print("Payload: ");
-  Serial.println(payload);
   mqttClient.publish(topic, payload);
+}
+
+bool tryConnectMqtt(const char* server, int port, const char* user, const char* pwd){
+  bool res = false;
+  setMqttServer(server, port);
+  uint8_t attempts = 0;
+  Serial.println("Connecting Mqtt");
+  while (!connectMqtt(user, pwd) && attempts < MQTT_TIMEOUT) {
+     delay(500);
+     attempts++;
+  }
+
+  if (attempts < MQTT_TIMEOUT) {
+    isWifiConfigSet = true;
+    res = true;
+    Serial.println("MQTT Connected");
+  } else {
+    Serial.println("Failed to connect MQTT");
+  }
+  return res;
+}
+
+uint8_t handleMqttJson(JsonObject& json) {
+  uint8_t res = 0;
+  
+  if(
+      json.success()
+      && containsMqttConfig(json)
+  ) {
+        
+    const char* server = json[MQTT_CONFIG_SERVER];
+    int port = json[MQTT_CONFIG_PORT];
+    const char* user = json[MQTT_CONFIG_USER];
+    const char* pwd = json[MQTT_CONFIG_PWD];
+    
+    if(tryConnectMqtt(server, port, user, pwd)) {
+      if(saveMqttConfigToSPIFFS(server, port, user, pwd)) {
+        setMqttConfig(server, port, user, pwd);
+        Serial.println("MQTT is configured");
+      } else {
+        res = SAVE_MQTT_FAILED_RESPONSE_HEADER;
+        Serial.println("Saving mqttConfig failed");                
+      }
+    } else {
+      res = MQTT_CONNECTION_FAILED_RESPONSE_HEADER;
+      Serial.println("Error. Could not connect to MQTT with mqttConfig provided");
+    }
+  } else {
+    res = INVALID_MQTT_CONFIG_RESPONSE_HEADER;
+    Serial.println("Error. Invalid mqttConfig is received");
+  }
+  
+  return res;
 }
 
 #endif
