@@ -6,7 +6,7 @@
 WiFiServer wifiServer(80);
 char socketBuff[MAX_SOCKET_BUFF_SIZE] = {0};
 bool isAPMode = false;
-uint8_t requestHeader;
+uint8_t requestHeader = 0;
 
 void printSocketBuff() {
   for(int i=0; i < MAX_SOCKET_BUFF_SIZE; i++) {

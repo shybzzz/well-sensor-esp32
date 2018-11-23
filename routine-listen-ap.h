@@ -20,10 +20,10 @@ bool listenSetConfig(WiFiClient& client) {
     DynamicJsonBuffer jsonBuffer;
     JsonObject& json = jsonBuffer.parseObject(socketBuff);
 
-    uint8_t saveWifiConfigRes = saveWifiConfig(json);
-    if(saveWifiConfigRes == 0) {
-      uint8_t saveMqttConfigRes = saveMqttConfig(json);
-      if(saveMqttConfigRes == 0) {
+    uint8_t wifiConfigEr = handleWifiJson(json);
+    if(wifiConfigEr == 0) {
+      uint8_t mqttConfigEr = handleMqttJson(json);
+      if(mqttConfigEr == 0) {
         sendWifiInfo(client);          
         delay(500);
         stopAP();
@@ -31,10 +31,10 @@ bool listenSetConfig(WiFiClient& client) {
         Serial.println();
         Serial.println("AP is stopped");
       } else {
-        client.print(saveMqttConfigRes);
+        client.print(mqttConfigEr);
       }
     } else {
-      client.print(saveWifiConfigRes);
+      client.print(wifiConfigEr);
     }
   }
   

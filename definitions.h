@@ -20,7 +20,7 @@
 
 // WIFI Config Keys
 #define WIFI_CONFIG_SSID                            ("ssid")
-#define WIFI_CONFIG_PWD                             ("ssidPwd")
+#define WIFI_CONFIG_PWD                             ("wifiPwd")
 
 // MQTT Config Keys
 #define MQTT_CONFIG_SERVER                          ("server")

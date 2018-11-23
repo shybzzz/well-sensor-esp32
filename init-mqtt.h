@@ -154,7 +154,7 @@ bool tryConnectMqtt(const char* server, int port, const char* user, const char* 
   return res;
 }
 
-uint8_t saveMqttConfig(JsonObject& json) {
+uint8_t handleMqttJson(JsonObject& json) {
   uint8_t res = 0;
   
   if(
