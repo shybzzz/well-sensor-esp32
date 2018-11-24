@@ -5,52 +5,59 @@
 #include "PubSubClient.h"
 
 #include "definitions.h"
-#include "init-pins.h"
+
+#include "init-led.h"
+#include "init-button.h"
 #include "init-qr.h"
 #include "init-spiffs.h"
-#include "init-wifi.h"
-#include "init-reset-button.h"
-#include "parse.h"
-#include "sockets.h"
-#include "listen-ap.h"
-#include "init-mqtt.h"
+#include "init-server.h"
 #include "init-data.h"
+#include "init-wifi.h"
+#include "init-mqtt.h"
+
 #include "data-median.h"
+
 #include "filter-median.h"
+
+#include "routine-listen-ap.h"
+#include "routine-data.h"
 
 void setup() {
 
   Serial.begin(115200);
   Serial.println("Starting Well Sensor...");
 
-  if(!SPIFFS.begin()){
-    Serial.println("Failed to Mount File System");
-    return;
-  }
-
-  initPins();
-  initResetButton();
+  initLed();
+  initButton();
   initQr();
-  initWifi();  
-  initMqtt();
+
+  if(initSPIFSS()) {
+    initWifi();  
+    initMqtt();
+  }
+    
   Serial.println("Well Sensor is running");
 }
 
 void loop() {
 
   if(buttonClicked) {
-    isWifiConfigSet = !isWifiConfigSet;
-    buttonClicked = false;
-    restartWifi();
+    isAPRunning
+      ? stopAP()
+      : startAP();
+    buttonClicked = false;    
     return;
   }
 
-  WiFiClient client = wifiServer.available();
+  listenServer();
+
+  if(isAPRunning) {
+    whiteLight();
+    return;
+  }
 
   if(!isWifiConfigSet) {
-    redLight();
-    listenSetWifiConfig(client);
-    listenGetIp(client);
+    redLight();    
     return;    
   }
 
@@ -60,11 +67,6 @@ void loop() {
     return;
   }
 
-  noLight();
-
-  delay(750);
-  client.stop();
-
   if(!isMqttConfigSet) {
     greenLight();
     return;
@@ -72,16 +74,15 @@ void loop() {
 
   if(!mqttClient.connected()) {
     blueLight();
-    connectMqtt();
+    reconnectMqtt();
     return;
   }
-  
-  mqttClient.loop();
-  
-  dance(100);
 
-  if (!getSamples()) {
-    return;  
+  noLight();
+
+  if(runDataRoutine()){
+    dance(100);
   }
-  processSamples();
+ 
+  mqttClient.loop();  
 }
