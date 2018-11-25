@@ -7,16 +7,16 @@ int filterMedian()
 {
   int res = 0;
 
-  std::sort(data, data + DATA_SIZE);
+  std::sort(data, data + MEDIAN_WINDOW);
 
   if (DATA_SIZE % 2 == 0)
   {
-      res = data[DATA_SIZE_H-1] + data[DATA_SIZE_H];
+      res = data[MEDIAN_MID-1] + data[MEDIAN_MID];
       res /=2;
   }
   else
   {
-      res = data[DATA_SIZE_H];
+      res = data[MEDIAN_MID];
   }
   return res;
 }
