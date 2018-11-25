@@ -21,6 +21,7 @@
 
 #include "filter-median.h"
 #include "filter-expSmooth.h"
+#include "filter-new-mean.h"
 
 #include "routine-listen-ap.h"
 #include "routine-data.h"
@@ -86,7 +87,7 @@ void loop() {
 
   noLight();
 
-  if(runDataRoutine(getADC_Data, filterExpSmooth, EXP_SMOOTH_WINDOW)){
+  if(runDataRoutine(getADC_Data, filterNewMean, NEW_MEAN_WINDOW)){
     dance(1500);
   }
  
