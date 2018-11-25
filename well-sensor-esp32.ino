@@ -17,12 +17,12 @@
 #include "init-adc.h"
 
 #include "data-median.h"
+#include "data-adc.h"
 
 #include "filter-median.h"
 
 #include "routine-listen-ap.h"
 #include "routine-data.h"
-#include "routine-adc.h"
 
 void setup() {
 
