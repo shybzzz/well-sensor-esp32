@@ -19,6 +19,7 @@
 #define INVALID_MQTT_CONFIG_RESPONSE_HEADER         6u
 
 // WIFI Config Keys
+#define WIFI_CONFIG_IP                              ("ip")
 #define WIFI_CONFIG_SSID                            ("ssid")
 #define WIFI_CONFIG_PWD                             ("wifiPwd")
 

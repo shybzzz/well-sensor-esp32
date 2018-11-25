@@ -1,13 +1,16 @@
 #ifndef __ROUTINE_LISTEN_AP__
 #define __ROUTINE_LISTEN_AP__
 
-bool sendWifiInfo(WiFiClient& client) {
+bool sendConfig(WiFiClient& client) {
   
   DynamicJsonBuffer jsonBuffer;
   JsonObject& json = jsonBuffer.createObject();
 
-  json["ip"] = WiFi.localIP().toString();
-  json["ssid"] = wifiConfig.ssid;
+  json[WIFI_CONFIG_IP] = WiFi.localIP().toString();
+  json[WIFI_CONFIG_SSID] = wifiConfig.ssid;
+  json[MQTT_CONFIG_SERVER] = mqttConfig.server;
+  json[MQTT_CONFIG_PORT] = mqttConfig.port;
+  json[MQTT_CONFIG_USER] = mqttConfig.user;
 
   return writeJson(client, json);
 }
@@ -24,7 +27,7 @@ bool listenSetConfig(WiFiClient& client) {
     if(wifiConfigEr == 0) {
       uint8_t mqttConfigEr = handleMqttJson(json);
       if(mqttConfigEr == 0) {
-        sendWifiInfo(client);          
+        sendConfig(client);          
         delay(500);
         stopAP();
         res = true;
@@ -44,7 +47,7 @@ bool listenSetConfig(WiFiClient& client) {
 bool listenGetWifiInfo(WiFiClient& client) {  
   return 
     readSocket(client, GET_IP_REQUEST_HEADER)
-    && sendWifiInfo(client);
+    && sendConfig(client);
 }
 
 void listenServer() {
