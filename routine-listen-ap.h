@@ -6,8 +6,8 @@ bool sendConfig(WiFiClient& client) {
   DynamicJsonBuffer jsonBuffer;
   JsonObject& json = jsonBuffer.createObject();
 
-  json["ip"] = WiFi.localIP().toString();
-  json["ssid"] = wifiConfig.ssid;
+  json[WIFI_CONFIG_IP] = WiFi.localIP().toString();
+  json[WIFI_CONFIG_SSID] = wifiConfig.ssid;
   json[MQTT_CONFIG_SERVER] = mqttConfig.server;
   json[MQTT_CONFIG_PORT] = mqttConfig.port;
   json[MQTT_CONFIG_USER] = mqttConfig.user;
