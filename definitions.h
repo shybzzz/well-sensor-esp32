@@ -29,4 +29,9 @@
 #define MQTT_CONFIG_USER                            ("user")
 #define MQTT_CONFIG_PWD                             ("mqttPwd")
 
+// MQTT Payload Keys
+#define PAYLOAD_DEVICE                              ("device")
+#define PAYLOAD_TOPIC                               ("topic")
+#define PAYLOAD_VALUE                               ("value")
+
 #endif
