@@ -87,7 +87,7 @@ void loop() {
 
   noLight();
 
-  if(runDataRoutine(getADC_Data, filterNewMean, NEW_MEAN_WINDOW)){
+  if(runDataRoutine(getADC_Data)){
     dance(1500);
   }
  

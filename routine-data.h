@@ -7,7 +7,15 @@ using Filter = int();
 void gatherData(getData func) {  
   int d = func();
   publishInt("data", d);
-  data[current_sample++] = d;
+  data[current_sample] = d;
+  Serial.println("Gather data:");
+  for (int i = 0; i < DATA_SIZE; ++i)
+  {
+    Serial.print(data[i]);
+    Serial.print("; ");  
+  }
+  Serial.print("Current_sample = ");
+  Serial.println(current_sample++);
 }
 
 int processData(Filter filter) {
@@ -16,16 +24,22 @@ int processData(Filter filter) {
   return res;
 }
 
-bool runDataRoutine(getData func, Filter filter, int window_size) {
+bool runDataRoutine(getData func) {
   bool res = false;
   
-  if (current_sample < DATA_SIZE && current_sample < window_size) {
+  if (current_sample < DATA_SIZE) {
+    Serial.println("current_sample < DATA_SIZE");
     gatherData(func);
   } else {
-    publishInt("filtered", processData(filter));
+    Serial.println("current_sample == DATA_SIZE");
+
+    int filtered = processData(filterExpSmooth);
+    publishInt("filtered/expSmooth", filtered);
+    filtered = processData(filterMedian);
+    publishInt("filtered/Median", filtered);
+    
     res = true;
   }
-
   return res;
 }
 

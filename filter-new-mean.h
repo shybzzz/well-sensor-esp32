@@ -3,7 +3,7 @@
 
 int filterNewMean()
 {
-  double alp = 1.0 / NEW_MEAN_WINDOW;
+  double alp = 1.0;
   static int prev_filtered_sample = -1;
   if (prev_filtered_sample < 0)
   {

@@ -7,7 +7,7 @@ int filterMedian()
 {
   int res = 0;
 
-  std::sort(data, data + MEDIAN_WINDOW);
+  std::sort(data, data + DATA_SIZE);
 
   if (DATA_SIZE % 2 == 0)
   {
