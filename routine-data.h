@@ -15,10 +15,11 @@ void gatherData(getData func) {
     Serial.print("; ");  
   }
   Serial.print("Current_sample = ");
-  Serial.println(current_sample++);
+  Serial.println(current_sample);
+  current_sample++;
 }
 
-int processData(Filter filter) {
+int runFilter(Filter filter) {
   int res = filter();
   current_sample = 0;
   return res;
@@ -31,13 +32,11 @@ bool runDataRoutine(getData func) {
     Serial.println("current_sample < DATA_SIZE");
     gatherData(func);
   } else {
-    Serial.println("current_sample == DATA_SIZE");
+    Serial.println("current_sample >= DATA_SIZE");
 
-    int filtered = processData(filterExpSmooth);
-    publishInt("filtered/expSmooth", filtered);
-    filtered = processData(filterMedian);
-    publishInt("filtered/Median", filtered);
-    
+    publishInt("filtered/expSmooth", runFilter(filterExpSmooth));
+    publishInt("filtered/Median", runFilter(filterMedian));
+    publishInt("filtered/Mean", runFilter(filterMean));    
     res = true;
   }
   return res;

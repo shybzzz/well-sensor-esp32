@@ -21,7 +21,7 @@
 
 #include "filter-median.h"
 #include "filter-expSmooth.h"
-#include "filter-new-mean.h"
+#include "filter-mean.h"
 
 #include "routine-listen-ap.h"
 #include "routine-data.h"
