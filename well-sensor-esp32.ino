@@ -14,8 +14,10 @@
 #include "init-data.h"
 #include "init-wifi.h"
 #include "init-mqtt.h"
+#include "init-adc.h"
 
 #include "data-median.h"
+#include "data-adc.h"
 
 #include "filter-median.h"
 
@@ -31,6 +33,9 @@ void setup() {
   initButton();
   initQr();
 
+  //setWifiConfig("asus_2.4", "0965157829bi&");
+  //setMqttConfig("m23.cloudmqtt.com", 12925, "tlwhlgqr", "g-VQc5c6w7eN");
+ 
   if(initSPIFSS()) {
     initWifi();  
     initMqtt();
@@ -80,7 +85,7 @@ void loop() {
 
   noLight();
 
-  if(runDataRoutine()){
+  if(runDataRoutine(getADC_Data)){
     dance(100);
   }
  

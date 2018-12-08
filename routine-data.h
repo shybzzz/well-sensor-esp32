@@ -1,8 +1,10 @@
 #ifndef __ROUTINE_DATA__
 #define __ROUTINE_DATA__
 
-void gatherData() {  
-  int d = getMedianData();
+using getData = int();
+
+void gatherData(getData func) {  
+  int d = func();
   publishInt("data", d);
   data[current_sample++] = d;
 }
@@ -13,11 +15,11 @@ int processData() {
   return res;
 }
 
-bool runDataRoutine() {
+bool runDataRoutine(getData func) {
   bool res = false;
   
   if(current_sample<DATA_SIZE) {
-    gatherData();
+    gatherData(func);
   } else {
     publishInt("filtered", processData());
     res = true;
