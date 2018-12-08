@@ -35,9 +35,6 @@ void setup() {
   initButton();
   initQr();
 
-  setWifiConfig("asus_2.4", "0965157829bi&");
-  setMqttConfig("m23.cloudmqtt.com", 12925, "tlwhlgqr", "g-VQc5c6w7eN");
- 
   if(initSPIFSS()) {
     initWifi();  
     initMqtt();
