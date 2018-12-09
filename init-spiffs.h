@@ -62,7 +62,10 @@ bool initSPIFSS() {
     res = true;
     Serial.println("File System is mounted");
   } else {
-    Serial.println("Failed to Mount File System");
+    Serial.println("Failed to Mount File System. Formatting...");
+    SPIFFS.format();
+    delay(1000);
+    ESP.restart();
   }
 
   return res;
