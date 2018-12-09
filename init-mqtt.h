@@ -128,6 +128,15 @@ void initMqtt() {
   }  
 }
 
+void publishJson(const char* topic, JsonObject& json) {
+  String str;
+  json.printTo(str);
+  uint8_t s = str.length() + 1;
+  char payload[s];
+  str.toCharArray(payload, s);
+  mqttClient.publish(topic, payload);
+}
+
 void publishInt(const char* topic, int d) {
   
   DynamicJsonBuffer jsonBuffer;
@@ -136,12 +145,8 @@ void publishInt(const char* topic, int d) {
   json[PAYLOAD_DEVICE] = qrConfig.DEVICE_ID;
   json[PAYLOAD_TOPIC] = topic;
   json[PAYLOAD_VALUE] = d;
-  String str;
-  json.printTo(str);
-  uint8_t s = str.length() + 1;
-  char payload[s];
-  str.toCharArray(payload, s);
-  mqttClient.publish(topic, payload);
+  
+  publishJson(topic, json);
 }
 
 bool tryConnectMqtt(const char* server, int port, const char* user, const char* pwd){
