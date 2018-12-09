@@ -3,6 +3,8 @@
 
 #include <algorithm>
 
+#define MEDIAN_MID DATA_SIZE/2u
+
 int filterMedian()
 {
   int res = 0;

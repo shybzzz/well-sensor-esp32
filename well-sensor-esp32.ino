@@ -20,7 +20,7 @@
 #include "data-adc.h"
 
 #include "filter-median.h"
-#include "filter-expSmooth.h"
+#include "filter-exp-smooth.h"
 #include "filter-mean.h"
 
 #include "routine-listen-ap.h"
@@ -85,7 +85,7 @@ void loop() {
   noLight();
 
   if(runDataRoutine(getADC_Data)){
-    dance(1500);
+    dance(100);
   }
  
   mqttClient.loop();  
