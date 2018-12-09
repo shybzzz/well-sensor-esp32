@@ -136,8 +136,11 @@ void publishInt(const char* topic, int d) {
   json[PAYLOAD_DEVICE] = qrConfig.DEVICE_ID;
   json[PAYLOAD_TOPIC] = topic;
   json[PAYLOAD_VALUE] = d;
-  char payload[100];
-  json.printTo(payload, sizeof(payload));
+  String str;
+  json.printTo(str);
+  uint8_t s = str.length() + 1;
+  char payload[s];
+  str.toCharArray(payload, s);
   mqttClient.publish(topic, payload);
 }
 
