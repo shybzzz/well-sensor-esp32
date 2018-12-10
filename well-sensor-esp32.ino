@@ -20,6 +20,8 @@
 #include "data-adc.h"
 
 #include "filter-median.h"
+#include "filter-exp-smooth.h"
+#include "filter-mean.h"
 
 #include "routine-listen-ap.h"
 #include "routine-data.h"
@@ -33,9 +35,6 @@ void setup() {
   initButton();
   initQr();
 
-  //setWifiConfig("asus_2.4", "0965157829bi&");
-  //setMqttConfig("m23.cloudmqtt.com", 12925, "tlwhlgqr", "g-VQc5c6w7eN");
- 
   if(initSPIFSS()) {
     initWifi();  
     initMqtt();

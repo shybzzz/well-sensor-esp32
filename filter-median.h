@@ -3,6 +3,8 @@
 
 #include <algorithm>
 
+#define MEDIAN_MID DATA_SIZE/2u
+
 int filterMedian()
 {
   int res = 0;
@@ -11,12 +13,12 @@ int filterMedian()
 
   if (DATA_SIZE % 2 == 0)
   {
-      res = data[DATA_SIZE_H-1] + data[DATA_SIZE_H];
+      res = data[MEDIAN_MID-1] + data[MEDIAN_MID];
       res /=2;
   }
   else
   {
-      res = data[DATA_SIZE_H];
+      res = data[MEDIAN_MID];
   }
   return res;
 }

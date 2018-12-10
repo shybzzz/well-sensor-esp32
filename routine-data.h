@@ -6,25 +6,22 @@ using getData = int();
 void gatherData(getData func) {  
   int d = func();
   publishInt("data", d);
-  data[current_sample++] = d;
-}
-
-int processData() {
-  int res = filterMedian();
-  current_sample = 0;
-  return res;
+  data[current_sample] = d;
+  current_sample++;
 }
 
 bool runDataRoutine(getData func) {
   bool res = false;
   
-  if(current_sample<DATA_SIZE) {
+  if (current_sample < DATA_SIZE) {
     gatherData(func);
   } else {
-    publishInt("filtered", processData());
+    publishInt("filter/expSmooth", filterExpSmooth());
+    publishInt("filter/Median", filterMedian());
+    publishInt("filter/Mean", filterMean());
+    current_sample = 0;    
     res = true;
   }
-
   return res;
 }
 
