@@ -3,25 +3,38 @@
 
 using getData = int();
 
-void gatherData(getData func) {  
+bool gatherData(getData func) {  
   int d = func();
   publishInt("data", d);
-  data[current_sample] = d;
-  current_sample++;
+  bool res = current_sample >= DATA_SIZE;
+  if(!res) {
+    data[current_sample] = d;
+    current_sample++;
+  } else {
+    for(int lc = 1; lc < DATA_SIZE; lc++) {
+      data[lc - 1] = data[lc];
+    }
+    data[DATA_SIZE - 1] = d;
+  }
+  return res;
+}
+
+void printData() {
+  for(int lc = 0; lc < DATA_SIZE; lc++) {
+    Serial.print(data[lc]);
+    Serial.print(", ");
+  }
+  Serial.println();
 }
 
 bool runDataRoutine(getData func) {
-  bool res = false;
-  
-  if (current_sample < DATA_SIZE) {
-    gatherData(func);
-  } else {
+  bool res = gatherData(func);  
+  if (res) {
     publishInt("filter/expSmooth", filterExpSmooth());
     publishInt("filter/Median", filterMedian());
     publishInt("filter/Mean", filterMean());
-    current_sample = 0;    
-    res = true;
   }
+//  printData();
   return res;
 }
 
