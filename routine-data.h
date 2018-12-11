@@ -5,7 +5,7 @@ using getData = int();
 
 bool gatherData(getData func) {  
   int d = func();
-  publishInt("data", d);
+  publishInt(TOPIC_DATA, d);
   bool res = current_sample >= DATA_SIZE;
   if(!res) {
     data[current_sample] = d;
@@ -30,9 +30,9 @@ void printData() {
 bool runDataRoutine(getData func) {
   bool res = gatherData(func);  
   if (res) {
-    publishInt("filter/expSmooth", filterExpSmooth());
-    publishInt("filter/Median", filterMedian());
-    publishInt("filter/Mean", filterMean());
+    publishInt(TOPIC_FILTER_EXP_SMOOTH, filterExpSmooth());
+    publishInt(TOPIC_FILTER_MEDIAN, filterMedian());
+    publishInt(TOPIC_FILTER_MEAN, filterMean());
   }
 //  printData();
   return res;

@@ -34,4 +34,10 @@
 #define PAYLOAD_TOPIC                               ("topic")
 #define PAYLOAD_VALUE                               ("value")
 
+// MQTT Topics
+#define TOPIC_DATA                                  ("Data")
+#define TOPIC_FILTER_MEAN                           ("Filter/Mean")
+#define TOPIC_FILTER_MEDIAN                         ("Filter/Median")
+#define TOPIC_FILTER_EXP_SMOOTH                     ("Filter/ExpSmooth")
+
 #endif
