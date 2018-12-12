@@ -9,9 +9,7 @@ int filterMedian()
 {
   int res = 0;
   int d[DATA_SIZE];
-  for(int lc = 1; lc < DATA_SIZE; lc++){
-    d[lc] = data[lc];
-  }
+  std::copy(data, data + DATA_SIZE, d);
   std::sort(d, d + DATA_SIZE);
 
   res = DATA_SIZE % 2 == 0
