@@ -28,6 +28,7 @@
 #define MQTT_CONFIG_PORT                            ("port")
 #define MQTT_CONFIG_USER                            ("user")
 #define MQTT_CONFIG_PWD                             ("mqttPwd")
+#define MQTT_CONFIG_DEVICE_ID                       ("deviceId")
 
 // MQTT Payload Keys
 #define PAYLOAD_DEVICE                              ("device")
