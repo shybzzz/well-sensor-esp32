@@ -136,12 +136,21 @@ void initMqtt() {
 }
 
 void publishJson(const char* topic, JsonObject& json) {
-  String str;
-  json.printTo(str);
-  uint8_t s = str.length() + 1;
-  char payload[s];
-  str.toCharArray(payload, s);
-  mqttClient.publish(topic, payload);
+  String pailoadStr;
+  json.printTo(pailoadStr);
+  uint8_t pailoadSize = pailoadStr.length() + 1;
+  char payload[pailoadSize];
+  pailoadStr.toCharArray(payload, pailoadSize);
+  
+  String mqttTopicStr;
+  mqttTopicStr.concat(mqttConfig.deviceId);
+  mqttTopicStr.concat(TOPIC_SEPARATOR);
+  mqttTopicStr.concat(topic);
+  uint8_t mqttTopicSize = mqttTopicStr.length() + 1;
+  char mqttTopic[mqttTopicSize];
+  mqttTopicStr.toCharArray(mqttTopic, mqttTopicSize);
+  
+  mqttClient.publish(mqttTopic, payload);
 }
 
 void publishInt(const char* topic, int d) {

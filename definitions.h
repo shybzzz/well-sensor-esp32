@@ -40,5 +40,6 @@
 #define TOPIC_FILTER_MEAN                           ("Filter/Mean")
 #define TOPIC_FILTER_MEDIAN                         ("Filter/Median")
 #define TOPIC_FILTER_EXP_SMOOTH                     ("Filter/ExpSmooth")
+#define TOPIC_SEPARATOR                             ("/")
 
 #endif
