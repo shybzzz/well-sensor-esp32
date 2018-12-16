@@ -136,6 +136,11 @@ void initMqtt() {
 }
 
 void publishJson(const char* topic, JsonObject& json) {
+  const char* deviceId = mqttConfig.deviceId;
+  
+  json[PAYLOAD_DEVICE] = deviceId;
+  json[PAYLOAD_TOPIC] = topic;
+  
   String pailoadStr;
   json.printTo(pailoadStr);
   uint8_t pailoadSize = pailoadStr.length() + 1;
@@ -143,26 +148,13 @@ void publishJson(const char* topic, JsonObject& json) {
   pailoadStr.toCharArray(payload, pailoadSize);
   
   String mqttTopicStr;
-  mqttTopicStr.concat(mqttConfig.deviceId);
+  mqttTopicStr.concat(deviceId);
   mqttTopicStr.concat(TOPIC_SEPARATOR);
   mqttTopicStr.concat(topic);
   uint8_t mqttTopicSize = mqttTopicStr.length() + 1;
   char mqttTopic[mqttTopicSize];
   mqttTopicStr.toCharArray(mqttTopic, mqttTopicSize);
-  
   mqttClient.publish(mqttTopic, payload);
-}
-
-void publishInt(const char* topic, int d) {
-  
-  DynamicJsonBuffer jsonBuffer;
-  JsonObject& json = jsonBuffer.createObject();
-
-  json[PAYLOAD_DEVICE] = mqttConfig.deviceId;
-  json[PAYLOAD_TOPIC] = topic;
-  json[PAYLOAD_VALUE] = d;
-  
-  publishJson(topic, json);
 }
 
 bool tryConnectMqtt(const char* server, int port, const char* user, const char* pwd, const char* device){

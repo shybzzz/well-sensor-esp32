@@ -34,12 +34,13 @@
 #define PAYLOAD_DEVICE                              ("device")
 #define PAYLOAD_TOPIC                               ("topic")
 #define PAYLOAD_VALUE                               ("value")
+#define PAYLOAD_VALUE_DATA                          ("data")
+#define PAYLOAD_VALUE_MEDIAN                        ("median")
+#define PAYLOAD_VALUE_MEAN                          ("mean")
+#define PAYLOAD_VALUE_EXP_SMOOTH                    ("expSmooth")
 
 // MQTT Topics
 #define TOPIC_DATA                                  ("Data")
-#define TOPIC_FILTER_MEAN                           ("Filter/Mean")
-#define TOPIC_FILTER_MEDIAN                         ("Filter/Median")
-#define TOPIC_FILTER_EXP_SMOOTH                     ("Filter/ExpSmooth")
 #define TOPIC_SEPARATOR                             ("/")
 
 #endif
