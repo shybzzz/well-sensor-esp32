@@ -3,11 +3,9 @@
 
 using getData = int();
 
-bool gatherData(getData func) {  
+int gatherData(getData func) {  
   int d = func();
-  publishInt(TOPIC_DATA, d);
-  bool res = current_sample >= DATA_SIZE;
-  if(!res) {
+  if(current_sample < DATA_SIZE) {
     data[current_sample] = d;
     current_sample++;
   } else {
@@ -16,7 +14,7 @@ bool gatherData(getData func) {
     }
     data[DATA_SIZE - 1] = d;
   }
-  return res;
+  return d;
 }
 
 void printData() {
@@ -28,12 +26,21 @@ void printData() {
 }
 
 bool runDataRoutine(getData func) {
-  bool res = gatherData(func);  
+  DynamicJsonBuffer jsonBuffer;
+  JsonObject& json = jsonBuffer.createObject();
+
+  json["data"] = gatherData(func);
+  
+  bool res = current_sample >= DATA_SIZE;
   if (res) {
-    publishInt(TOPIC_FILTER_EXP_SMOOTH, filterExpSmooth());
-    publishInt(TOPIC_FILTER_MEDIAN, filterMedian());
-    publishInt(TOPIC_FILTER_MEAN, filterMean());
+    json[PAYLOAD_VALUE_MEDIAN] = filterMedian();
+    json[PAYLOAD_VALUE_MEAN] = filterMean();    
+    json[PAYLOAD_VALUE_EXP_SMOOTH] = filterExpSmooth();
   }
+
+  JsonObject& root = jsonBuffer.createObject();
+  root[PAYLOAD_VALUE] = json;
+  publishJson(TOPIC_DATA, root);
 //  printData();
   return res;
 }
