@@ -29,7 +29,7 @@ bool runDataRoutine(getData func) {
   DynamicJsonBuffer jsonBuffer;
   JsonObject& json = jsonBuffer.createObject();
 
-  json["data"] = gatherData(func);
+  json[PAYLOAD_VALUE_DATA] = gatherData(func);
   
   bool res = current_sample >= DATA_SIZE;
   if (res) {

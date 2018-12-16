@@ -34,6 +34,7 @@
 #define PAYLOAD_DEVICE                              ("device")
 #define PAYLOAD_TOPIC                               ("topic")
 #define PAYLOAD_VALUE                               ("value")
+#define PAYLOAD_VALUE_DATA                          ("data")
 #define PAYLOAD_VALUE_MEDIAN                        ("median")
 #define PAYLOAD_VALUE_MEAN                          ("mean")
 #define PAYLOAD_VALUE_EXP_SMOOTH                    ("expSmooth")
