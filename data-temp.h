@@ -3,13 +3,14 @@
 
 #include <OneWire.h>
 
-#define TEMP_PIN 32u
-
+#define TEMP_PIN      32u
+#define TO_CELSIUS    0.0625
+#define RAW_DATA_SIZE 2u
 OneWire ds(TEMP_PIN);
 
 int getTempData()
 {
-  byte data[2];
+  byte data[RAW_DATA_SIZE];
    
   ds.reset();
   ds.write(0xCC); 
@@ -24,7 +25,7 @@ int getTempData()
   data[0] = ds.read(); 
   data[1] = ds.read(); 
  
-  float temperature =  ((data[1] << 8) | data[0]) * 0.0625;
+  float temperature =  ((data[1] << 8) | data[0]) * TO_CELSIUS;
   return temperature;
 }
 #endif
