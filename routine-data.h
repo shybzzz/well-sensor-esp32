@@ -3,25 +3,45 @@
 
 using getData = int();
 
-void gatherData(getData func) {  
+int gatherData(getData func) {  
   int d = func();
-  publishInt("data", d);
-  data[current_sample] = d;
-  current_sample++;
+  if(current_sample < DATA_SIZE) {
+    data[current_sample] = d;
+    current_sample++;
+  } else {
+    for(int lc = 1; lc < DATA_SIZE; lc++) {
+      data[lc - 1] = data[lc];
+    }
+    data[DATA_SIZE - 1] = d;
+  }
+  return d;
+}
+
+void printData() {
+  for(int lc = 0; lc < DATA_SIZE; lc++) {
+    Serial.print(data[lc]);
+    Serial.print(", ");
+  }
+  Serial.println();
 }
 
 bool runDataRoutine(getData func) {
-  bool res = false;
+  DynamicJsonBuffer jsonBuffer;
+  JsonObject& json = jsonBuffer.createObject();
+
+  json[PAYLOAD_VALUE_DATA] = gatherData(func);
   
-  if (current_sample < DATA_SIZE) {
-    gatherData(func);
-  } else {
-    publishInt("filter/expSmooth", filterExpSmooth());
-    publishInt("filter/Median", filterMedian());
-    publishInt("filter/Mean", filterMean());
-    current_sample = 0;    
-    res = true;
+  bool res = current_sample >= DATA_SIZE;
+  if (res) {
+    json[PAYLOAD_VALUE_MEDIAN] = filterMedian();
+    json[PAYLOAD_VALUE_MEAN] = filterMean();    
+    json[PAYLOAD_VALUE_EXP_SMOOTH] = filterExpSmooth();
   }
+
+  JsonObject& root = jsonBuffer.createObject();
+  root[PAYLOAD_VALUE] = json;
+  publishJson(TOPIC_DATA, root);
+//  printData();
   return res;
 }
 
