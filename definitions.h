@@ -28,5 +28,19 @@
 #define MQTT_CONFIG_PORT                            ("port")
 #define MQTT_CONFIG_USER                            ("user")
 #define MQTT_CONFIG_PWD                             ("mqttPwd")
+#define MQTT_CONFIG_DEVICE_ID                       ("deviceId")
+
+// MQTT Payload Keys
+#define PAYLOAD_DEVICE                              ("device")
+#define PAYLOAD_TOPIC                               ("topic")
+#define PAYLOAD_VALUE                               ("value")
+#define PAYLOAD_VALUE_DATA                          ("data")
+#define PAYLOAD_VALUE_MEDIAN                        ("median")
+#define PAYLOAD_VALUE_MEAN                          ("mean")
+#define PAYLOAD_VALUE_EXP_SMOOTH                    ("expSmooth")
+
+// MQTT Topics
+#define TOPIC_DATA                                  ("Data")
+#define TOPIC_SEPARATOR                             ("/")
 
 #endif

@@ -8,18 +8,14 @@
 int filterMedian()
 {
   int res = 0;
+  int d[DATA_SIZE];
+  std::copy(data, data + DATA_SIZE, d);
+  std::sort(d, d + DATA_SIZE);
 
-  std::sort(data, data + DATA_SIZE);
-
-  if (DATA_SIZE % 2 == 0)
-  {
-      res = data[MEDIAN_MID-1] + data[MEDIAN_MID];
-      res /=2;
-  }
-  else
-  {
-      res = data[MEDIAN_MID];
-  }
+  res = DATA_SIZE % 2 == 0
+    ? (d[MEDIAN_MID-1] + d[MEDIAN_MID]) / 2
+    : d[MEDIAN_MID];
+    
   return res;
 }
 

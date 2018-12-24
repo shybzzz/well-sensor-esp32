@@ -7,6 +7,7 @@ struct MqttConfig
   int port;
   char user[MAX_STR_LEN];
   char pwd[MAX_STR_LEN];
+  char deviceId[MAX_STR_LEN];
 };
 
 MqttConfig mqttConfig;
@@ -27,7 +28,7 @@ void mqttCallback(char* topic, byte* payload, size_t len){
   }
   Serial.println();  
 }
-void setMqttConfig(const char* server, int port, const char* user, const char* pwd){
+void setMqttConfig(const char* server, int port, const char* user, const char* pwd, const char* device){
   
   memset(mqttConfig.server, 0, MAX_STR_LEN);
   memcpy(mqttConfig.server, server, MAX_STR_LEN);
@@ -40,6 +41,9 @@ void setMqttConfig(const char* server, int port, const char* user, const char* p
   memset(mqttConfig.pwd, 0, MAX_STR_LEN);
   memcpy(mqttConfig.pwd, pwd, MAX_STR_LEN);
 
+  memset(mqttConfig.deviceId, 0, MAX_STR_LEN);
+  memcpy(mqttConfig.deviceId, device, MAX_STR_LEN);
+
   isMqttConfigSet = true;
 }
 
@@ -48,7 +52,9 @@ bool containsMqttConfig(JsonObject& json) {
     json.containsKey(MQTT_CONFIG_SERVER)
     && json.containsKey(MQTT_CONFIG_PORT)
     && json.containsKey(MQTT_CONFIG_USER)
-    && json.containsKey(MQTT_CONFIG_PWD);
+    && json.containsKey(MQTT_CONFIG_PWD)
+    && json.containsKey(MQTT_CONFIG_DEVICE_ID);
+    
 }
 
 bool loadMqttConfig() {
@@ -63,7 +69,7 @@ bool loadMqttConfig() {
         && containsMqttConfig(json)
       ) {
         setMqttConfig(json[MQTT_CONFIG_SERVER], json[MQTT_CONFIG_PORT], 
-                      json[MQTT_CONFIG_USER], json[MQTT_CONFIG_PWD]);
+                      json[MQTT_CONFIG_USER], json[MQTT_CONFIG_PWD], json[MQTT_CONFIG_DEVICE_ID]);
         res = true; 
       } else {
         Serial.println("Mqtt configuration is corrupted");  
@@ -73,7 +79,7 @@ bool loadMqttConfig() {
   return res;
 }
 
-bool saveMqttConfigToSPIFFS(const char* server, int port, const char* user, const char* pwd) {
+bool saveMqttConfigToSPIFFS(const char* server, int port, const char* user, const char* pwd, const char* device) {
   
   bool res = false;  
 
@@ -84,6 +90,7 @@ bool saveMqttConfigToSPIFFS(const char* server, int port, const char* user, cons
   json[MQTT_CONFIG_PORT] = port;
   json[MQTT_CONFIG_USER] = user;
   json[MQTT_CONFIG_PWD] = pwd;
+  json[MQTT_CONFIG_DEVICE_ID] = device;
 
   if (saveJson(mqttFileName, json)) {
     res = true;
@@ -92,10 +99,10 @@ bool saveMqttConfigToSPIFFS(const char* server, int port, const char* user, cons
   return res;
 }
 
-bool connectMqtt(const char* user, const char* pwd){
+bool connectMqtt(const char* user, const char* pwd, const char* device){
   bool res = false;
       
-  mqttClient.connect(qrConfig.DEVICE_ID, user, pwd);
+  mqttClient.connect(device, user, pwd);
   if (mqttClient.connected()) {    
     res = true;
     Serial.println("Connected to mqtt broker");    
@@ -108,7 +115,7 @@ bool connectMqtt(const char* user, const char* pwd){
 }
 
 bool reconnectMqtt() {
-  return connectMqtt(mqttConfig.user, mqttConfig.pwd);
+  return connectMqtt(mqttConfig.user, mqttConfig.pwd, mqttConfig.deviceId);
 }
 
 void setMqttServer(const char* server, int port){
@@ -128,18 +135,34 @@ void initMqtt() {
   }  
 }
 
-void publishInt(const char* topic, int d) {
-  char payload[5];
-  sprintf(payload, "%d", d);
-  mqttClient.publish(topic, payload);
+void publishJson(const char* topic, JsonObject& json) {
+  const char* deviceId = mqttConfig.deviceId;
+  
+  json[PAYLOAD_DEVICE] = deviceId;
+  json[PAYLOAD_TOPIC] = topic;
+  
+  String pailoadStr;
+  json.printTo(pailoadStr);
+  uint8_t pailoadSize = pailoadStr.length() + 1;
+  char payload[pailoadSize];
+  pailoadStr.toCharArray(payload, pailoadSize);
+  
+  String mqttTopicStr;
+  mqttTopicStr.concat(deviceId);
+  mqttTopicStr.concat(TOPIC_SEPARATOR);
+  mqttTopicStr.concat(topic);
+  uint8_t mqttTopicSize = mqttTopicStr.length() + 1;
+  char mqttTopic[mqttTopicSize];
+  mqttTopicStr.toCharArray(mqttTopic, mqttTopicSize);
+  mqttClient.publish(mqttTopic, payload);
 }
 
-bool tryConnectMqtt(const char* server, int port, const char* user, const char* pwd){
+bool tryConnectMqtt(const char* server, int port, const char* user, const char* pwd, const char* device){
   bool res = false;
   setMqttServer(server, port);
   uint8_t attempts = 0;
   Serial.println("Connecting Mqtt");
-  while (!connectMqtt(user, pwd) && attempts < MQTT_TIMEOUT) {
+  while (!connectMqtt(user, pwd, device) && attempts < MQTT_TIMEOUT) {
      delay(500);
      attempts++;
   }
@@ -166,10 +189,11 @@ uint8_t handleMqttJson(JsonObject& json) {
     int port = json[MQTT_CONFIG_PORT];
     const char* user = json[MQTT_CONFIG_USER];
     const char* pwd = json[MQTT_CONFIG_PWD];
+    const char* device = json[MQTT_CONFIG_DEVICE_ID];
     
-    if(tryConnectMqtt(server, port, user, pwd)) {
-      if(saveMqttConfigToSPIFFS(server, port, user, pwd)) {
-        setMqttConfig(server, port, user, pwd);
+    if(tryConnectMqtt(server, port, user, pwd, device)) {
+      if(saveMqttConfigToSPIFFS(server, port, user, pwd, device)) {
+        setMqttConfig(server, port, user, pwd, device);
         Serial.println("MQTT is configured");
       } else {
         res = SAVE_MQTT_FAILED_RESPONSE_HEADER;

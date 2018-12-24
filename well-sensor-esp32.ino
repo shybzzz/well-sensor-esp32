@@ -86,7 +86,7 @@ void loop() {
 
   noLight();
 
-  if(runDataRoutine(getTempData)){
+  if(!runDataRoutine(getTempData)){
     dance(100);
   }
  
