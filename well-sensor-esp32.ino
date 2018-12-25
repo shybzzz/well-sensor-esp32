@@ -18,6 +18,7 @@
 
 #include "data-median.h"
 #include "data-adc.h"
+#include "data-temp.h"
 
 #include "filter-median.h"
 #include "filter-exp-smooth.h"
@@ -35,6 +36,7 @@ void setup() {
   initButton();
   initQr();
 
+ 
   if(initSPIFSS()) {
     initWifi();  
     initMqtt();
@@ -84,7 +86,7 @@ void loop() {
 
   noLight();
 
-  if(!runDataRoutine(getADC_Data)){
+  if(!runDataRoutine(getTempData)){
     dance(100);
   }
  
