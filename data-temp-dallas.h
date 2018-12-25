@@ -3,16 +3,12 @@
 
 #include <DallasTemperature.h>
 
-DallasTemperature dallasSensors(&ds);
-DeviceAddress sensorAddress;
+#define SENSOR_COUNT 2u
+#define SENSOR_RESOLUTION 12u
 
-float getTemperature(DeviceAddress deviceAddress){
-  float tempC = dallasSensors.getTempC(deviceAddress);
-  Serial.print("Temp C: ");
-  Serial.println(tempC);
-  return tempC;
-}
- 
+DallasTemperature dallasSensors(&ds);
+DeviceAddress sensorAddress[SENSOR_COUNT];
+
 void printAddress(DeviceAddress deviceAddress){
   for (uint8_t i = 0; i < 8; i++)
   {
@@ -20,6 +16,15 @@ void printAddress(DeviceAddress deviceAddress){
     Serial.print(deviceAddress[i], HEX);
   }
 }
+
+float getTemperature(DeviceAddress deviceAddress){
+  float tempC = dallasSensors.getTempC(deviceAddress);
+  printAddress(deviceAddress);
+  Serial.print("Temp C: ");
+  Serial.println(tempC);
+  return tempC;
+}
+ 
 
 void initDallasSensor()
 {
@@ -31,19 +36,25 @@ void initDallasSensor()
  
   // find sensor:
   // find sensor addr by index.
-  if (!dallasSensors.getAddress(sensorAddress, 0)) Serial.println("Can not find first sensor");
- 
-  Serial.print("Sensor addr: ");
-  printAddress(sensorAddress);
-  Serial.println();
- 
-  dallasSensors.setResolution(sensorAddress, 12);
+  for (uint8_t i = 0; i < SENSOR_COUNT; ++i) {
+    
+    if (!dallasSensors.getAddress(sensorAddress[i], i)) {
+   
+      Serial.print("Can not find sensor #");
+      Serial.println(i); 
+    }
+    Serial.print("Sensor addr: ");
+    printAddress(sensorAddress[i]);
+    Serial.println();
+
+    dallasSensors.setResolution(sensorAddress[i], SENSOR_RESOLUTION);
+  }
 }
 
 int getDallasTempData()
 {
   dallasSensors.requestTemperatures(); // ds18b20 calculates temrepature
   //  get temperature
-  return getTemperature(sensorAddress);  
+  return getTemperature(sensorAddress[1]) - getTemperature(sensorAddress[0]);  
 }
 #endif

@@ -37,7 +37,7 @@ void setup() {
   initButton();
   initQr();
   initDallasSensor();
-  
+ 
   if(initSPIFSS()) {
     initWifi();  
     initMqtt();
