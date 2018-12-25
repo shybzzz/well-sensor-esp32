@@ -19,6 +19,7 @@
 #include "data-median.h"
 #include "data-adc.h"
 #include "data-temp.h"
+#include "data-temp-dallas.h"
 
 #include "filter-median.h"
 #include "filter-exp-smooth.h"
@@ -35,8 +36,8 @@ void setup() {
   initLed();
   initButton();
   initQr();
-
- 
+  initDallasSensor();
+  
   if(initSPIFSS()) {
     initWifi();  
     initMqtt();
@@ -86,7 +87,7 @@ void loop() {
 
   noLight();
 
-  if(!runDataRoutine(getTempData)){
+  if(!runDataRoutine(getDallasTempData)){
     dance(100);
   }
  
