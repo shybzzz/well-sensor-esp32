@@ -5,9 +5,10 @@
 
 #define SENSOR_COUNT 2u
 #define SENSOR_RESOLUTION 12u
-
+#define NO_CONNECTED_SENSORS -10000
 DallasTemperature dallasSensors(&ds);
 DeviceAddress sensorAddress[SENSOR_COUNT];
+uint8_t connectedSensors = 0;
 
 void printAddress(DeviceAddress deviceAddress){
   for (uint8_t i = 0; i < 8; i++)
@@ -31,14 +32,17 @@ void initDallasSensor()
   Serial.print("Search sensors...");
   dallasSensors.begin();
   Serial.print("Found: ");
-  Serial.print(dallasSensors.getDeviceCount(), DEC);
+  connectedSensors = dallasSensors.getDeviceCount();
+  Serial.print(connectedSensors, DEC);
   Serial.println(" sensors.");
  
   // find sensor:
   // find sensor addr by index.
-  for (uint8_t i = 0; i < SENSOR_COUNT; ++i) {
+  for (uint8_t i = 0; i < connectedSensors; ++i) 
+  {
     
-    if (!dallasSensors.getAddress(sensorAddress[i], i)) {
+    if (!dallasSensors.getAddress(sensorAddress[i], i)) 
+    {
    
       Serial.print("Can not find sensor #");
       Serial.println(i); 
@@ -55,6 +59,19 @@ int getDallasTempData()
 {
   dallasSensors.requestTemperatures(); // ds18b20 calculates temrepature
   //  get temperature
-  return getTemperature(sensorAddress[1]) - getTemperature(sensorAddress[0]);  
+  int result = 0;
+  if (connectedSensors == 0)
+  {
+    result = NO_CONNECTED_SENSORS;
+  }
+  else if (connectedSensors == 1)
+  {
+    result = dallasSensors.getTempC(sensorAddress[0]);
+  }
+  else 
+  {
+    result = dallasSensors.getTempC(sensorAddress[1]) - dallasSensors.getTempC(sensorAddress[0]);    
+  }
+  return result;
 }
 #endif
