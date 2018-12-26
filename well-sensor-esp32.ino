@@ -15,6 +15,7 @@
 #include "init-wifi.h"
 #include "init-mqtt.h"
 #include "init-adc.h"
+#include "init-temp-sensors.h"
 
 #include "data-median.h"
 #include "data-adc.h"
@@ -37,7 +38,7 @@ void setup() {
   initButton();
   initQr();
   initDallasSensor();
- 
+
   if(initSPIFSS()) {
     initWifi();  
     initMqtt();

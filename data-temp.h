@@ -1,14 +1,6 @@
 #ifndef __DATA_TEMPERATURE__
 #define __DATA_TEMPERATURE__
 
-#include <OneWire.h>
-
-#define TEMP_PIN      32u
-#define TO_CELSIUS    0.0625
-#define RAW_DATA_SIZE 2u
-
-OneWire ds(TEMP_PIN);
-
 int getTempData()
 {
   byte data_temp[RAW_DATA_SIZE];
