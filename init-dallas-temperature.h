@@ -38,7 +38,7 @@ void initDallasSensor()
 
   // find sensor:
   // find sensor addr by index.
-  for (uint8_t i = 0; i < connectedSensors || i < MAX_DALLAS_TEMPERATURE_SENSORS_COUNT; ++i)
+  for (uint8_t i = 0; i < connectedSensors && i < MAX_DALLAS_TEMPERATURE_SENSORS_COUNT; ++i)
   {
     if (dallasSensors.getAddress(sensorAddress[i], i)) {
       dallasSensors.setResolution(sensorAddress[i], DALLAS_TEMPERATURE_SENSOR_RESOLUTION);
