@@ -15,10 +15,11 @@
 #include "init-wifi.h"
 #include "init-mqtt.h"
 #include "init-adc.h"
+#include "init-dallas-temperature.h"
 
 #include "data-median.h"
 #include "data-adc.h"
-#include "data-temp.h"
+#include "data-dallas-temperature.h"
 
 #include "filter-median.h"
 #include "filter-exp-smooth.h"
@@ -36,49 +37,49 @@ void setup() {
   initButton();
   initQr();
 
- 
-  if(initSPIFSS()) {
-    initWifi();  
+  if (initSPIFSS()) {
+    initWifi();
     initMqtt();
+    initDallasSensor();
   }
-    
+
   Serial.println("Well Sensor is running");
 }
 
 void loop() {
 
-  if(buttonClicked) {
+  if (buttonClicked) {
     isAPRunning
-      ? stopAP()
-      : startAP();
-    buttonClicked = false;    
+    ? stopAP()
+    : startAP();
+    buttonClicked = false;
     return;
   }
 
   listenServer();
 
-  if(isAPRunning) {
+  if (isAPRunning) {
     whiteLight();
     return;
   }
 
-  if(!isWifiConfigSet) {
-    redLight();    
-    return;    
+  if (!isWifiConfigSet) {
+    redLight();
+    return;
   }
 
-  if(!isWifiConnected()) {
+  if (!isWifiConnected()) {
     yellowLight();
     reconnectWifi();
     return;
   }
 
-  if(!isMqttConfigSet) {
+  if (!isMqttConfigSet) {
     greenLight();
     return;
   }
 
-  if(!mqttClient.connected()) {
+  if (!mqttClient.connected()) {
     blueLight();
     reconnectMqtt();
     return;
@@ -86,9 +87,9 @@ void loop() {
 
   noLight();
 
-  if(!runDataRoutine(getTempData)){
+  if (!runDataRoutine(getDallasTempData)) {
     dance(100);
   }
- 
-  mqttClient.loop();  
+
+  mqttClient.loop();
 }
