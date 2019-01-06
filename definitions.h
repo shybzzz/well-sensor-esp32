@@ -43,4 +43,14 @@
 #define TOPIC_DATA                                  ("Data")
 #define TOPIC_SEPARATOR                             ("/")
 
+// Sensor Config Keys
+#define SENSOR_CONFIG_TYPE                          ("sensorType")
+
+// Sensor Types
+#define SENSOR_SIMULATED                            0u
+#define SENSOR_ANALOG_TEST                          1u
+#define SENSOR_DS18B20                              2u
+#define SENSOR_GUT800                               3u
+#define SENSOR_INA250A2PW                           4u
+
 #endif
