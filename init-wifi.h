@@ -11,33 +11,35 @@ WifiConfig wifiConfig;
 bool isWifiConfigSet = false;
 bool isAPRunning = false;
 
+WiFiServer wifiServer(80);
+
 void setWifiConfig(const char* ssid, const char* pwd) {
-  
+
   memset(wifiConfig.ssid, 0, MAX_STR_LEN);
   memcpy(wifiConfig.ssid, ssid, MAX_STR_LEN);
-  
+
   memset(wifiConfig.pwd, 0, MAX_STR_LEN);
   memcpy(wifiConfig.pwd, pwd, MAX_STR_LEN);
-  
-  isWifiConfigSet = true;      
+
+  isWifiConfigSet = true;
 }
 
 bool containsWifiConfig(JsonObject&json) {
-  return 
+  return
     json.containsKey(WIFI_CONFIG_SSID)
     && json.containsKey(WIFI_CONFIG_PWD);
 }
 
-bool loadWifiConfig(){
+bool loadWifiConfig() {
   bool res = false;
 
-  if(readFile(wifiFileName)) {
+  if (readFile(wifiFileName)) {
     DynamicJsonBuffer jsonBuffer;
     JsonObject& json = jsonBuffer.parseObject(fileBuff);
     if (
       json.success()
       && containsWifiConfig(json)
-      ) {
+    ) {
       setWifiConfig(json[WIFI_CONFIG_SSID], json[WIFI_CONFIG_PWD]);
       res = true;
     } else {
@@ -45,22 +47,22 @@ bool loadWifiConfig(){
     }
   }
 
-  return res;    
+  return res;
 }
 
 bool saveWifiConfigToSPIFFS(const char* ssid, const char* pwd) {
-  
+
   bool res = false;
-  
+
   DynamicJsonBuffer jsonBuffer;
   JsonObject& json = jsonBuffer.createObject();
-  
+
   json[WIFI_CONFIG_SSID] = ssid;
   json[WIFI_CONFIG_PWD] = pwd;
-  
+
   res = saveJson(wifiFileName, json);
-  
-  if(res) {
+
+  if (res) {
     Serial.println("Wifi Config are saved");
   }
   return res;
@@ -83,15 +85,15 @@ void stopAP() {
 
 
 void initWifi() {
-  
+
   loadWifiConfig();
-  if(isWifiConfigSet) {
+  if (isWifiConfigSet) {
     wifiServer.begin();
     WiFi.begin(wifiConfig.ssid, wifiConfig.pwd);
   } else {
     startAP();
   }
-  
+
 }
 
 bool isWifiConnected() {
@@ -99,7 +101,7 @@ bool isWifiConnected() {
 }
 
 bool tryConnectWifi(const char* ssid, const char* pwd) {
-  
+
   bool res = false;
 
   WiFi.disconnect();
@@ -110,9 +112,9 @@ bool tryConnectWifi(const char* ssid, const char* pwd) {
 
   uint8_t attempts = 0;
   while (!isWifiConnected() && attempts < WIFI_TIMEOUT) { // Wait for the Wi-Fi to connect
-     delay(500);
-     Serial.print(".");
-     attempts++;
+    delay(500);
+    Serial.print(".");
+    attempts++;
   }
   Serial.println();
 
@@ -120,7 +122,7 @@ bool tryConnectWifi(const char* ssid, const char* pwd) {
   if (attempts < WIFI_TIMEOUT && isWifiConnected() && WiFi.localIP() != IPAddress(0, 0, 0, 0)) {
     isWifiConfigSet = true;
     res = true;
-    Serial.println("Connection established!");  
+    Serial.println("Connection established!");
     Serial.print("IP address:\t");
     Serial.println(WiFi.localIP());
   } else {
@@ -136,20 +138,20 @@ bool reconnectWifi() {
 
 uint8_t handleWifiJson(JsonObject& json) {
   uint8_t res = 0;
-  
-  if(
-      json.success()
-      && containsWifiConfig(json)
-  ) {        
+
+  if (
+    json.success()
+    && containsWifiConfig(json)
+  ) {
     const char* ssid = json[WIFI_CONFIG_SSID];
     const char* pwd = json[WIFI_CONFIG_PWD];
-    if(tryConnectWifi(ssid, pwd)) {
-      if(saveWifiConfigToSPIFFS(ssid, pwd)) {
+    if (tryConnectWifi(ssid, pwd)) {
+      if (saveWifiConfigToSPIFFS(ssid, pwd)) {
         setWifiConfig(ssid, pwd);
         Serial.println("Wifi is configured");
       } else {
         res = SAVE_WIFI_FAILED_RESPONSE_HEADER;
-        Serial.println("Saving wifiConfig failed");                
+        Serial.println("Saving wifiConfig failed");
       }
     } else {
       WiFi.disconnect();
@@ -160,7 +162,7 @@ uint8_t handleWifiJson(JsonObject& json) {
     res = INVALID_WIFI_CONFIG_RESPONSE_HEADER;
     Serial.println("Error. Invalid wifiConfig is received");
   }
-  
+
   return res;
 }
 

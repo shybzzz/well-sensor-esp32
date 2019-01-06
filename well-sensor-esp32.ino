@@ -10,11 +10,9 @@
 #include "init-button.h"
 #include "init-qr.h"
 #include "init-spiffs.h"
-#include "init-server.h"
 #include "init-data.h"
 #include "init-wifi.h"
 #include "init-mqtt.h"
-#include "init-adc.h"
 #include "init-dallas-temperature.h"
 
 #include "data-median.h"
@@ -25,8 +23,8 @@
 #include "filter-exp-smooth.h"
 #include "filter-mean.h"
 
-#include "routine-listen-ap.h"
-#include "routine-data.h"
+#include "init-sensor.h"
+#include "init-server.h"
 
 void setup() {
 
@@ -40,7 +38,8 @@ void setup() {
   if (initSPIFSS()) {
     initWifi();
     initMqtt();
-    initDallasSensor();
+    initSensor();
+    
   }
 
   Serial.println("Well Sensor is running");
@@ -87,7 +86,7 @@ void loop() {
 
   noLight();
 
-  if (!runDataRoutine(getDallasTempData)) {
+  if (!measure()) {
     dance(100);
   }
 
