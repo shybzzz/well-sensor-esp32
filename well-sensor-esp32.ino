@@ -26,6 +26,8 @@
 #include "init-sensor.h"
 #include "init-server.h"
 
+#include "esp32-hal-adc.h"
+
 void setup() {
 
   Serial.begin(115200);
