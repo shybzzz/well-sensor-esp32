@@ -41,7 +41,7 @@ bool runDataRoutine(getData func) {
   JsonObject& root = jsonBuffer.createObject();
   root[PAYLOAD_VALUE] = json;
   publishJson(TOPIC_DATA, root);
-  printData();
+//  printData();
   return res;
 }
 
