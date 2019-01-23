@@ -28,11 +28,14 @@
 #include "routine-listen-ap.h"
 #include "routine-data.h"
 
+#include <esp32-hal-adc.h>
+
 void setup() {
 
   Serial.begin(115200);
   Serial.println("Starting Well Sensor...");
 
+  analogSetAttenuation(ADC_0db);
   initLed();
   initButton();
   initQr();
@@ -40,9 +43,9 @@ void setup() {
   if (initSPIFSS()) {
     initWifi();
     initMqtt();
-    initDallasSensor();
+    //initDallasSensor();
   }
-
+ 
   Serial.println("Well Sensor is running");
 }
 
@@ -87,7 +90,7 @@ void loop() {
 
   noLight();
 
-  if (!runDataRoutine(getDallasTempData)) {
+  if (!runDataRoutine(getADC_Data)) {
     dance(100);
   }
 
