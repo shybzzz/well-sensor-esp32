@@ -43,7 +43,7 @@ void initSensorType() {
       initDallasSensor();
       break;
     case SENSOR_ANALOG_TEST:
-      analogSetAttenuation(ADC_0db);
+      initADC();
       break;
   }
 
