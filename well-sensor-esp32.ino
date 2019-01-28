@@ -3,6 +3,7 @@
 #include "WiFi.h"
 #include "ArduinoJson.h"
 #include "PubSubClient.h"
+#include "esp32-hal-adc.h"
 
 #include "definitions.h"
 
@@ -14,7 +15,7 @@
 #include "init-wifi.h"
 #include "init-mqtt.h"
 #include "init-dallas-temperature.h"
-
+#include "init-adc.h"
 #include "data-median.h"
 #include "data-adc.h"
 #include "data-dallas-temperature.h"
@@ -26,6 +27,7 @@
 #include "init-sensor.h"
 #include "init-server.h"
 
+
 void setup() {
 
   Serial.begin(115200);
@@ -34,7 +36,7 @@ void setup() {
   initLed();
   initButton();
   initQr();
-
+  
   if (initSPIFSS()) {
     initWifi();
     initMqtt();

@@ -42,6 +42,9 @@ void initSensorType() {
     case SENSOR_DS18B20:
       initDallasSensor();
       break;
+    case SENSOR_ANALOG_TEST:
+      initADC();
+      break;
   }
 
   Serial.print("Sensor Type: ");
