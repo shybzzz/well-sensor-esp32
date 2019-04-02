@@ -7,8 +7,9 @@ struct SensorConfig {
   uint8_t sensorType;
 };
 
-const char *sensorFileName = "/sensorConfig.json";
+const char *sensorFileName = "/CurrentSensorConfig.json";
 SensorConfig sensorConfig;
+//sensorConfig.sensorType = 4;
 
 bool containsSensorConfig(JsonObject&json) {
   return
@@ -37,6 +38,7 @@ void loadSensorConfig() {
 }
 
 void initSensorType() {
+  sensorConfig.sensorType = SENSOR_INA250A2PW;
   uint8_t sensorType = sensorConfig.sensorType;
   switch (sensorType) {
     case SENSOR_DS18B20:
@@ -44,6 +46,9 @@ void initSensorType() {
       break;
     case SENSOR_ANALOG_TEST:
       initADC();
+      break;
+    case SENSOR_INA250A2PW:
+      currentSensorInit(NULL);
       break;
   }
 
@@ -101,11 +106,14 @@ bool runDataRoutine(getData func) {
 
 bool measure() {
   uint8_t sensorType = sensorConfig.sensorType;
+  Serial.print("Sensor type: ");
+  Serial.println(sensorType);
+  
   return runDataRoutine(
            sensorType == SENSOR_SIMULATED ? getMedianData
            : sensorType == SENSOR_ANALOG_TEST
-           || sensorType == SENSOR_GUT800
-           || sensorType == SENSOR_INA250A2PW ? getADC_Data
+           || sensorType == SENSOR_GUT800 ? getADC_Data
+           : sensorType == SENSOR_INA250A2PW ? readCurrent
            : sensorType == SENSOR_DS18B20 ? getDallasTempData
            : getMedianData
          );

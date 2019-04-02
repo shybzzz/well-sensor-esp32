@@ -4,6 +4,7 @@
 #include "ArduinoJson.h"
 #include "PubSubClient.h"
 #include "esp32-hal-adc.h"
+#include "INA260.h"
 
 #include "definitions.h"
 
@@ -19,6 +20,7 @@
 #include "data-median.h"
 #include "data-adc.h"
 #include "data-dallas-temperature.h"
+#include "current_sensor.h"
 
 #include "filter-median.h"
 #include "filter-exp-smooth.h"
