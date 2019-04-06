@@ -83,6 +83,14 @@ int readVoltage()
   Serial.print("Voltage: ");
   Serial.println(voltage * 1000);
   return voltage * 1000;
-  
+}
+
+int readPower()
+{
+    double power = -1;
+    ina260.readPowerRegisterInWatts(power);
+    Serial.print("Power(mW): ");
+    Serial.println(power * 1000);
+    return power * 1000;
 }
 #endif /* CURRENT_SENSOR */
