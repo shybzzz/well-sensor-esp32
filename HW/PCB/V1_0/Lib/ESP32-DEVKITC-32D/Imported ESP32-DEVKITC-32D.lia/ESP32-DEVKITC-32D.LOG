@@ -1,0 +1,29 @@
+PCAD Importer Log
+Project : ESP32-DEVKITC-32D.LibPkg
+
+Section : D:\work\GIT\well-sensor-esp32\HW\PCB\V1_0\Lib\ESP32-DEVKITC-32D\ESP32-DEVKITC-32D.lia
+    Section : PCB Library - ESP32-DEVKITC-32D.PcbLib
+        Section : Load Messages
+            Warning - 1 : Skipping Token ESP32-DEVKITC-32D On Line 170
+            Warning - 1 : Skipping Token attachedSymbol On Line 577
+        EndSection
+
+        Section : Import Messages
+        EndSection
+    EndSection
+
+    Section : SCH Library - ESP32-DEVKITC-32D.SchLib
+        Section : Parsing Messages
+            Warning - 1 : Skipping Token padStyleDef On Line 9
+            Warning - 1 : Skipping Token padStyleDef On Line 21
+            Warning - 1 : Skipping Token multiLayer On Line 96
+            Warning - 1 : Skipping Token layerContents On Line 136
+            Warning - 1 : Skipping Token layerContents On Line 146
+            Warning - 1 : Skipping Token layerContents On Line 156
+            Warning - 1 : Skipping Token layerContents On Line 162
+        EndSection
+
+        Section : Generating SCH Library - ESP32-DEVKITC-32D.SchLib
+        EndSection
+    EndSection
+EndSection
