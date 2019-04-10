@@ -20,7 +20,7 @@
 #include "data-median.h"
 #include "data-adc.h"
 #include "data-dallas-temperature.h"
-#include "current_sensor.h"
+#include "data-power.h"
 
 #include "filter-median.h"
 #include "filter-exp-smooth.h"

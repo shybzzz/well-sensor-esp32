@@ -9,7 +9,6 @@ struct SensorConfig {
 
 const char *sensorFileName = "/CurrentSensorConfig.json";
 SensorConfig sensorConfig;
-//sensorConfig.sensorType = 4;
 
 bool containsSensorConfig(JsonObject&json) {
   return
@@ -38,8 +37,6 @@ void loadSensorConfig() {
 }
 
 void initSensorType() {
-  sensorConfig.sensorType = SENSOR_INA260_CURRENT;
-  //uint8_t sensorType = sensorConfig.sensorType;
   switch (sensorConfig.sensorType) {
     case SENSOR_DS18B20:
       initDallasSensor();
@@ -50,12 +47,9 @@ void initSensorType() {
     case SENSOR_INA260_VOLTAGE:
     case SENSOR_INA260_CURRENT:
     case SENSOR_INA260_POWER:
-      currentSensorInit(NULL);
+      InitCurrentSensor(NULL);
       break;
   }
-
-  Serial.print("Sensor Type: ");
-  Serial.println(sensorConfig.sensorType);
 }
 
 void initSensor() {
