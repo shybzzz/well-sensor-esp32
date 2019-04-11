@@ -5,11 +5,11 @@
 
 #define MEDIAN_MID DATA_SIZE/2u
 
-int filterMedian()
+int filterMedian(int* dataPtr)
 {
   int res = 0;
   int d[DATA_SIZE];
-  std::copy(data, data + DATA_SIZE, d);
+  std::copy(dataPtr, dataPtr + DATA_SIZE, d);
   std::sort(d, d + DATA_SIZE);
 
   res = DATA_SIZE % 2 == 0

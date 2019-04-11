@@ -87,9 +87,9 @@ bool runDataRoutine(getData func) {
 
   bool res = current_sample >= DATA_SIZE;
   if (res) {
-    json[PAYLOAD_VALUE_MEDIAN] = filterMedian();
-    json[PAYLOAD_VALUE_MEAN] = filterMean();
-    json[PAYLOAD_VALUE_EXP_SMOOTH] = filterExpSmooth();
+    json[PAYLOAD_VALUE_MEDIAN] = filterMedian(data);
+    json[PAYLOAD_VALUE_MEAN] = filterMean(data);
+    json[PAYLOAD_VALUE_EXP_SMOOTH] = filterExpSmooth(data);
   }
 
   JsonObject& root = jsonBuffer.createObject();
