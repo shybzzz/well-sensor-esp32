@@ -51,6 +51,7 @@
 #define SENSOR_ANALOG_TEST                          1u
 #define SENSOR_DS18B20                              2u
 #define SENSOR_GUT800                               3u
-#define SENSOR_INA250A2PW                           4u
-
+#define SENSOR_INA260_VOLTAGE                       4u
+#define SENSOR_INA260_CURRENT                       5u
+#define SENSOR_INA260_POWER                         6u
 #endif

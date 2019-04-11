@@ -8,7 +8,7 @@ struct ADC_Config
   uint8_t cycles = 8;
   uint8_t samples = 1;
   uint8_t clockDiv = 1;
-  adc_attenuation_t attenuation = ADC_11db;  
+  adc_attenuation_t attenuation = ADC_0db;  
 };
 ADC_Config adc_config;
 

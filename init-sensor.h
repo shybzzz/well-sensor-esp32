@@ -37,18 +37,19 @@ void loadSensorConfig() {
 }
 
 void initSensorType() {
-  uint8_t sensorType = sensorConfig.sensorType;
-  switch (sensorType) {
+  switch (sensorConfig.sensorType) {
     case SENSOR_DS18B20:
       initDallasSensor();
       break;
     case SENSOR_ANALOG_TEST:
       initADC();
       break;
+    case SENSOR_INA260_VOLTAGE:
+    case SENSOR_INA260_CURRENT:
+    case SENSOR_INA260_POWER:
+      InitCurrentSensor();
+      break;
   }
-
-  Serial.print("Sensor Type: ");
-  Serial.println(sensorType);
 }
 
 void initSensor() {
@@ -101,11 +102,16 @@ bool runDataRoutine(getData func) {
 
 bool measure() {
   uint8_t sensorType = sensorConfig.sensorType;
+  Serial.print("Sensor type: ");
+  Serial.println(sensorType);
+  
   return runDataRoutine(
            sensorType == SENSOR_SIMULATED ? getMedianData
            : sensorType == SENSOR_ANALOG_TEST
-           || sensorType == SENSOR_GUT800
-           || sensorType == SENSOR_INA250A2PW ? getADC_Data
+           || sensorType == SENSOR_GUT800 ? getADC_Data
+           : sensorType == SENSOR_INA260_VOLTAGE ? readVoltage
+           : sensorType == SENSOR_INA260_CURRENT ? readCurrent
+           : sensorType == SENSOR_INA260_POWER   ? readPower
            : sensorType == SENSOR_DS18B20 ? getDallasTempData
            : getMedianData
          );
