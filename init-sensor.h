@@ -7,7 +7,7 @@ struct SensorConfig {
   uint8_t sensorType;
 };
 
-const char *sensorFileName = "/CurrentSensorConfig.json";
+const char *sensorFileName = "/sensorConfig.json";
 SensorConfig sensorConfig;
 
 bool containsSensorConfig(JsonObject&json) {
