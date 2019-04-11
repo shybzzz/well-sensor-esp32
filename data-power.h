@@ -7,8 +7,6 @@ struct PowerData{
     double watts;
 };
 
-/* Init power data structure pointer */
-static PowerData *pwrDataPtr;
 /* Set INA260 Address */
 static INA260 ina260(INA260::ADDR_GND,INA260::ADDR_GND);
 
@@ -24,43 +22,12 @@ static bool setInaConfig()
     return ina260.writeConfigurationRegister(configReg);
 }
 
-bool InitCurrentSensor(PowerData *ptr)
+bool InitCurrentSensor()
 {
-    /* Init power data structure*/
-    if (ptr != NULL)
-    {
-        pwrDataPtr = ptr;
-        memset(pwrDataPtr, 0, sizeof(PowerData));
-    }
     /* Call the begin() function to initialize the instance. This will also initialize the Wire/I2C library */
     ina260.begin();
     /* Set configuration */
     return setInaConfig();
-}
-
-bool getPowerData()
-{
-    if (pwrDataPtr != NULL)
-    {
-        /* Read current */
-        if (!ina260.readCurrentRegisterInAmps(pwrDataPtr->current))
-        {
-            return false;
-        }
-        /* Read voltage */
-        if (!ina260.readBusVoltageRegisterInVolts(pwrDataPtr->voltage))
-        {
-            return false;
-        }
-        /* Read power */
-        if (!ina260.readPowerRegisterInWatts(pwrDataPtr->watts))
-        {
-            return false;
-        }
-        return true;
-    }
-
-    return false;
 }
 
 int readCurrent()
