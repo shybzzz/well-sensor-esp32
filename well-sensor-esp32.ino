@@ -21,6 +21,7 @@
 #include "data-adc.h"
 #include "data-dallas-temperature.h"
 #include "data-power.h"
+#include "PowerMeter.h"
 
 #include "filter-median.h"
 #include "filter-exp-smooth.h"

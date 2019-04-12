@@ -47,7 +47,7 @@ void initSensorType() {
     case SENSOR_INA260_VOLTAGE:
     case SENSOR_INA260_CURRENT:
     case SENSOR_INA260_POWER:
-      InitCurrentSensor();
+      powerMeter.init();
       break;
   }
 }
