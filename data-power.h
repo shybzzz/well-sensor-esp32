@@ -3,8 +3,8 @@
 
 #include "PowerMeter.h"
 
-PowerMeter powerMeter(INA260::ADDR_GND,INA260::ADDR_GND);
-
+PowerMeter powerMeterConsumption(INA260::ADDR_GND,INA260::ADDR_GND);
+/*
 int readCurrent()
 {
     return powerMeter.readCurrent();
@@ -19,4 +19,5 @@ int readPower()
 {
     return powerMeter.readPower();
 }
+*/
 #endif /* CURRENT_SENSOR */

@@ -27,7 +27,7 @@
 #include "filter-exp-smooth.h"
 #include "filter-mean.h"
 
-#include "init-sensor.h"
+#include "init-combined-sensors.h"
 #include "init-server.h"
 
 
