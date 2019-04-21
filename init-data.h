@@ -2,7 +2,6 @@
 #define __INIT_DATA__
 
 #define DATA_SIZE 9u
-#define NUMBER_OF_SENSORS 5u
 
 int dataConsumption[DATA_SIZE];
 int dataCharging[DATA_SIZE];
@@ -11,10 +10,5 @@ int dataTemperature[DATA_SIZE];
 int dataDepth[DATA_SIZE];
 
 uint8_t current_sample = 0;
-
-int* allData[DATA_SIZE] = { dataConsumption, dataCharging, 
-                            dataDischarge, dataTemperature, 
-                            dataDepth
-                          };
 
 #endif
