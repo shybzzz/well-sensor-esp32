@@ -51,6 +51,12 @@
 
 // Sensor Config Keys
 #define SENSOR_CONFIG_TYPE                          ("sensorType")
+#define POWER_ADDR                                  ("addr")
+#define POWER_MODE                                  ("mode")
+#define POWER_ISHCT                                 ("ishct")
+#define POWER_VBUSCT                                ("vbusct")
+#define POWER_AVG                                   ("avg")  
+#define POWER_RST                                   ("rst")
 
 // Sensor Types
 #define SENSOR_SIMULATED                            0u
@@ -61,4 +67,6 @@
 #define SENSOR_INA260_CURRENT                       5u
 #define SENSOR_INA260_POWER                         6u
 #define SENSOR_COMBINED                             7u
+
+#define POWER_METERS_COUNT                          2u
 #endif
