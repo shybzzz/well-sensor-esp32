@@ -1,34 +1,26 @@
 #include "PowerMeter.h"
 
-PowerMeter::PowerMeter(INA260::AddressPin a0, INA260::AddressPin a1) : sensor(a0, a1), power(0), voltage(0), 
-                                                                      current(0), isInit(false)
+PowerMeter::PowerMeter() : sensor(0), addr(0), power(0), 
+                           voltage(0), current(0), isInit(false)
 {
   
 }
 
-bool PowerMeter::init()
+bool PowerMeter::init(PowerMeterConfig& configs)
 {
   /* Call the begin() function to initialize the instance. This will also initialize the Wire/I2C library */
+  addr = configs.addr;
+  sensor = INA260(addr);
+  
   sensor.begin();
   /* Set configuration */
-  isInit = setInaConfig();
+  isInit = sensor.writeConfigurationRegister(configs.configReg); 
   return isInit;
 }
 
 bool PowerMeter::isInitialized() const
 {
   return isInit;
-}
-bool PowerMeter::setInaConfig()
-{
-    INA260::ConfigurationRegister configReg = {0};
-    /* Average 64 samples for each reading */
-    configReg.avg = INA260::AVG_64;
-    configReg.vbusct = INA260::VBUSCT_1_1MS;
-    configReg.ishct = INA260::ISHCT_1_1MS;
-    configReg.mode = INA260::MODE_ISH_VBUS_CONTINUOUS;
-    
-    return sensor.writeConfigurationRegister(configReg);  
 }
 
 int PowerMeter::readCurrent()

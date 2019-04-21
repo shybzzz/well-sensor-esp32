@@ -3,19 +3,25 @@
 
 #include "INA260.h"
 
+struct PowerMeterConfig
+{
+  INA260::ConfigurationRegister configReg;
+  uint8_t addr;
+};
+
 class PowerMeter
 {
   public:
-        PowerMeter(INA260::AddressPin a0, INA260::AddressPin a1);
-        bool init();
+        PowerMeter();
+        bool init(PowerMeterConfig& configs);
         bool isInitialized() const;
         int readCurrent();
         int readVoltage();
         int readPower();
   
   private:
-        bool setInaConfig();
         INA260 sensor;
+        uint8_t addr;
         double power;
         double voltage;
         double current;
