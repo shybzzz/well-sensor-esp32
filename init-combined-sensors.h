@@ -1,10 +1,43 @@
 #ifndef __INIT_COMBINED_SENSOR__
 #define __INIT_COMBINED_SENSOR__
 
+const char *sensorFileName = "/sensorConfig.json";
+
+bool containsSensorConfig(JsonObject& json)
+{
+  return 
+        json.containsKey(SENSOR_CONFIG_TYPE);  
+}
+
+bool loadSensorConfig()
+{
+  bool res = false;
+  
+  if (readFile(sensorFileName)) {
+  DynamicJsonBuffer jsonBuffer;
+  JsonObject& json = jsonBuffer.parseObject(fileBuff);
+  if (
+    json.success()
+    && containsSensorConfig(json)
+  ) {
+    res = true;
+  } else {
+    Serial.println("Unsuported sensor config type!");
+  }
+  } else {
+    Serial.println("Unsuported sensor config type!");
+  }
+  
+  return res;
+}
 void initSensors()
 {
-  powerMeterConsumption.init();
-  initDallasSensor();
+  if (loadSensorConfig())
+  {
+    Serial.println("Found valid sensor configs. Init combined sensors.");
+    powerMeters[0].init(powerMeterConfigs[0]);
+    initDallasSensor();
+  }
 }
 int gatherData(int val, int* data) {
   if (current_sample < DATA_SIZE) {
@@ -24,7 +57,7 @@ bool measure()
   DynamicJsonBuffer jsonBuffer;
   JsonObject& json = jsonBuffer.createObject();
 
-  int val = powerMeterConsumption.readVoltage();
+  int val = powerMeters[0].readVoltage();
   Serial.print("Voltage: ");
   Serial.println(val);
   gatherData(val, dataConsumption);
@@ -52,8 +85,38 @@ bool measure()
   
 }
 
-void handleSensorJson(JsonObject& json)
-{
-  
+bool saveSensorConfigToSPIFFS() {
+
+  bool res = false;
+
+  DynamicJsonBuffer jsonBuffer;
+  JsonObject& json = jsonBuffer.createObject();
+
+  json[SENSOR_CONFIG_TYPE] = SENSOR_COMBINED;
+
+  json[POWER_ADDR] = powerMeterConfigs[0].addr;
+  json[POWER_MODE] = powerMeterConfigs[0].configReg.mode;
+  json[POWER_ISHCT] = powerMeterConfigs[0].configReg.ishct;
+  json[POWER_VBUSCT] = powerMeterConfigs[0].configReg.vbusct;
+  json[POWER_AVG] = powerMeterConfigs[0].configReg.avg;
+  json[POWER_RST] = powerMeterConfigs[0].configReg.rst;
+
+  res = saveJson(sensorFileName, json);
+
+  if (res) {
+    Serial.println("Sensor Config are saved");
+  }
+  return res;
 }
+
+void handleSensorJson(JsonObject& json) {
+  if (
+    json.success()
+    && containsSensorConfig(json)
+  ) {
+    uint8_t sensorType = json[SENSOR_CONFIG_TYPE];
+    saveSensorConfigToSPIFFS();
+  }
+}
+
 #endif

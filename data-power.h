@@ -2,22 +2,18 @@
 #define __DATA_POWER__
 
 #include "PowerMeter.h"
+PowerMeterConfig powerMeterConfigs[POWER_METERS_COUNT];
+PowerMeter powerMeters[POWER_METERS_COUNT];
 
-PowerMeter powerMeterConsumption(INA260::ADDR_GND,INA260::ADDR_GND);
-/*
-int readCurrent()
+void setPowerMeterConfigs(PowerMeterConfig& configs, uint8_t addr, uint8_t mode, uint8_t ishct,
+                          uint8_t vbusct, uint8_t avg, uint8_t rst)
 {
-    return powerMeter.readCurrent();
+  configs.addr = addr;
+  configs.configReg.mode = mode;
+  configs.configReg.ishct = ishct;
+  configs.configReg.vbusct = vbusct;
+  configs.configReg.avg = avg;
+  configs.configReg.rst = rst;
 }
 
-int readVoltage()
-{
-  return powerMeter.readVoltage();
-}
-
-int readPower()
-{
-    return powerMeter.readPower();
-}
-*/
 #endif /* CURRENT_SENSOR */

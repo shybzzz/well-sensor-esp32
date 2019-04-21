@@ -39,12 +39,11 @@ void setup() {
   initLed();
   initButton();
   initQr();
-  
+ 
   if (initSPIFSS()) {
     initWifi();
     initMqtt();
-    initSensor();
-    
+    initSensors();
   }
 
   Serial.println("Well Sensor is running");
