@@ -4,7 +4,7 @@
 #include "ArduinoJson.h"
 #include "PubSubClient.h"
 #include "esp32-hal-adc.h"
-#include "INA260.h"
+//#include "INA260.h"
 
 #include "definitions.h"
 
@@ -20,7 +20,7 @@
 #include "data-median.h"
 #include "data-adc.h"
 #include "data-dallas-temperature.h"
-#include "data-power.h"
+//#include "data-power.h"
 
 #include "filter-median.h"
 #include "filter-exp-smooth.h"
