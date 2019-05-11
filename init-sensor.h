@@ -47,7 +47,7 @@ void initSensorType() {
     case SENSOR_INA260_VOLTAGE:
     case SENSOR_INA260_CURRENT:
     case SENSOR_INA260_POWER:
-//      InitCurrentSensor();
+      InitCurrentSensor();
       break;
   }
 }
@@ -107,9 +107,9 @@ bool measure() {
            sensorType == SENSOR_SIMULATED ? getMedianData
            : sensorType == SENSOR_ANALOG_TEST
            || sensorType == SENSOR_GUT800 ? getADC_Data
-//           : sensorType == SENSOR_INA260_VOLTAGE ? readVoltage
-//           : sensorType == SENSOR_INA260_CURRENT ? readCurrent
-//           : sensorType == SENSOR_INA260_POWER   ? readPower
+           : sensorType == SENSOR_INA260_VOLTAGE ? readVoltage
+           : sensorType == SENSOR_INA260_CURRENT ? readCurrent
+           : sensorType == SENSOR_INA260_POWER   ? readPower
            : sensorType == SENSOR_DS18B20 ? getDallasTempData
            : getMedianData
          );
