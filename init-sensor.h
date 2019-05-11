@@ -102,8 +102,6 @@ bool runDataRoutine(getData func) {
 
 bool measure() {
   uint8_t sensorType = sensorConfig.sensorType;
-  Serial.print("Sensor type: ");
-  Serial.println(sensorType);
   
   return runDataRoutine(
            sensorType == SENSOR_SIMULATED ? getMedianData
