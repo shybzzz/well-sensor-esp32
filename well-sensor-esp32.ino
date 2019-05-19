@@ -21,12 +21,13 @@
 #include "data-adc.h"
 #include "data-dallas-temperature.h"
 #include "data-power.h"
+#include "PowerMeter.h"
 
 #include "filter-median.h"
 #include "filter-exp-smooth.h"
 #include "filter-mean.h"
 
-#include "init-sensor.h"
+#include "init-combined-sensors.h"
 #include "init-server.h"
 
 
@@ -38,12 +39,11 @@ void setup() {
   initLed();
   initButton();
   initQr();
-  
+ 
   if (initSPIFSS()) {
     initWifi();
     initMqtt();
-    initSensor();
-    
+    initSensors();
   }
 
   Serial.println("Well Sensor is running");

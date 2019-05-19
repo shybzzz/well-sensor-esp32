@@ -47,7 +47,7 @@ void initSensorType() {
     case SENSOR_INA260_VOLTAGE:
     case SENSOR_INA260_CURRENT:
     case SENSOR_INA260_POWER:
-      InitCurrentSensor();
+      powerMeter.init();
       break;
   }
 }
@@ -57,7 +57,7 @@ void initSensor() {
   initSensorType();
 }
 
-int gatherData(getData func) {
+int gatherData(getData func, int* data) {
   int d = func();
   if (current_sample < DATA_SIZE) {
     data[current_sample] = d;
@@ -71,7 +71,7 @@ int gatherData(getData func) {
   return d;
 }
 
-void printData() {
+void printData(int* data) {
   for (int lc = 0; lc < DATA_SIZE; lc++) {
     Serial.print(data[lc]);
     Serial.print(", ");
@@ -83,13 +83,13 @@ bool runDataRoutine(getData func) {
   DynamicJsonBuffer jsonBuffer;
   JsonObject& json = jsonBuffer.createObject();
 
-  json[PAYLOAD_VALUE_DATA] = gatherData(func);
+  json[PAYLOAD_VALUE_DATA] = gatherData(func, dataConsumption);
 
   bool res = current_sample >= DATA_SIZE;
   if (res) {
-    json[PAYLOAD_VALUE_MEDIAN] = filterMedian();
-    json[PAYLOAD_VALUE_MEAN] = filterMean();
-    json[PAYLOAD_VALUE_EXP_SMOOTH] = filterExpSmooth();
+    json[PAYLOAD_VALUE_MEDIAN] = filterMedian(dataConsumption);
+    json[PAYLOAD_VALUE_MEAN] = filterMean(dataConsumption);
+    json[PAYLOAD_VALUE_EXP_SMOOTH] = filterExpSmooth(dataConsumption);
   }
 
   JsonObject& root = jsonBuffer.createObject();

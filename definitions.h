@@ -39,12 +39,24 @@
 #define PAYLOAD_VALUE_MEAN                          ("mean")
 #define PAYLOAD_VALUE_EXP_SMOOTH                    ("expSmooth")
 
+#define PAYLOAD_INA260_CONSUMPTION                  ("inaConsumption")
+#define PAYLOAD_INA260_CHARGING                     ("inaCharging")
+#define PAYLOAD_DS18B20                             ("ds18b20")
+#define PAYLOAD_GUT800                              ("gut800")
+#define PAYLOAD_DISCHARGE                           ("discharge")
+
 // MQTT Topics
 #define TOPIC_DATA                                  ("Data")
 #define TOPIC_SEPARATOR                             ("/")
 
 // Sensor Config Keys
 #define SENSOR_CONFIG_TYPE                          ("sensorType")
+#define POWER_ADDR                                  ("addr")
+#define POWER_MODE                                  ("mode")
+#define POWER_ISHCT                                 ("ishct")
+#define POWER_VBUSCT                                ("vbusct")
+#define POWER_AVG                                   ("avg")  
+#define POWER_RST                                   ("rst")
 
 // Sensor Types
 #define SENSOR_SIMULATED                            0u
@@ -54,4 +66,7 @@
 #define SENSOR_INA260_VOLTAGE                       4u
 #define SENSOR_INA260_CURRENT                       5u
 #define SENSOR_INA260_POWER                         6u
+#define SENSOR_COMBINED                             7u
+
+#define POWER_METERS_COUNT                          2u
 #endif
