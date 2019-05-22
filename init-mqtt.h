@@ -139,7 +139,6 @@ void publishJson(const char* topic, JsonObject& json) {
   const char* deviceId = mqttConfig.deviceId;
   
   json[PAYLOAD_DEVICE] = deviceId;
-  json[PAYLOAD_TOPIC] = topic;
   
   String pailoadStr;
   json.printTo(pailoadStr);

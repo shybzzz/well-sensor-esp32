@@ -41,8 +41,7 @@ void initSensors()
 }
 int gatherData(int val, int* data) {
   if (current_sample < DATA_SIZE) {
-    data[current_sample] = val;
-    //current_sample++;
+    data[current_sample] = val;    
   } else {
     for (int lc = 1; lc < DATA_SIZE; lc++) {
       data[lc - 1] = data[lc];
@@ -52,37 +51,50 @@ int gatherData(int val, int* data) {
   return val;
 }
 
+bool gatherAllData() {
+  gatherData(powerMeters[1].readCurrent(), dataCharging);
+  gatherData(powerMeters[0].readPower(), dataConsumption);
+  gatherData(getADC_Data(), dataDepth);
+//  TODO: Ask Sych about that
+  gatherData(getMedianData(), dataDischarge);
+  gatherData(getDallasTempData(), dataTemperature);
+  
+  bool res = current_sample >= DATA_SIZE;
+  if(!res) {
+    current_sample++;
+  }
+  return res;
+}
+
 bool measure()
 {
   DynamicJsonBuffer jsonBuffer;
   JsonObject& json = jsonBuffer.createObject();
 
-  int val = powerMeters[0].readVoltage();
-  Serial.print("Voltage: ");
-  Serial.println(val);
-  gatherData(val, dataConsumption);
-
-  val = getDallasTempData();
-  Serial.print("\nTemper: ");
-  Serial.println(val);
-  gatherData(val, dataTemperature);
+  gatherAllData();
   
-  current_sample++;
-  
+  json[PAYLOAD_DISCHARGE] = dataDischarge[DATA_SIZE - 1];
   bool res = current_sample >= DATA_SIZE;
   if (res) {
     json[PAYLOAD_INA260_CONSUMPTION] = filterMedian(dataConsumption);
-   // json[PAYLOAD_INA260_CHARGING] = filterMedian(dataCharging);
+    json[PAYLOAD_INA260_CHARGING] = filterMedian(dataCharging);
     json[PAYLOAD_DS18B20] = filterMedian(dataTemperature);
-   // json[PAYLOAD_GUT800] = filterMedian(dataDepth);
-   // json[PAYLOAD_DISCHARGE] = filterMedian(dataDischarge);
+    json[PAYLOAD_GUT800] = filterMedian(dataDepth);    
+  } else {
+    json[PAYLOAD_INA260_CONSUMPTION] = dataConsumption[DATA_SIZE - 1];
+    json[PAYLOAD_INA260_CHARGING] = dataCharging[DATA_SIZE - 1];
+    json[PAYLOAD_DS18B20] = dataTemperature[DATA_SIZE - 1];
+    json[PAYLOAD_GUT800] = dataDepth[DATA_SIZE - 1];
+    
   }
 
   JsonObject& root = jsonBuffer.createObject();
   root[PAYLOAD_VALUE] = json;
   publishJson(TOPIC_DATA, root);
-  root.printTo(Serial);
   
+  root.prettyPrintTo(Serial);
+  Serial.println();
+  return res;
 }
 
 bool saveSensorConfigToSPIFFS() {

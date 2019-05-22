@@ -39,10 +39,10 @@
 #define PAYLOAD_VALUE_MEAN                          ("mean")
 #define PAYLOAD_VALUE_EXP_SMOOTH                    ("expSmooth")
 
-#define PAYLOAD_INA260_CONSUMPTION                  ("inaConsumption")
-#define PAYLOAD_INA260_CHARGING                     ("inaCharging")
-#define PAYLOAD_DS18B20                             ("ds18b20")
-#define PAYLOAD_GUT800                              ("gut800")
+#define PAYLOAD_INA260_CONSUMPTION                  ("consumption")
+#define PAYLOAD_INA260_CHARGING                     ("solarCurrent")
+#define PAYLOAD_DS18B20                             ("temperature")
+#define PAYLOAD_GUT800                              ("depth")
 #define PAYLOAD_DISCHARGE                           ("discharge")
 
 // MQTT Topics
