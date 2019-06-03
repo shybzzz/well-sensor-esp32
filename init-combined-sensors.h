@@ -57,12 +57,11 @@ bool gatherAllData() {
   gatherData(getADC_Data(), dataDepth);
 //  TODO: Ask Sych about that
   gatherData(getMedianData(), dataDischarge);
-  gatherData(getDallasTempData(), dataTemperature);
+  int t = getDallasTempData();
+  gatherData(t, dataTemperature);
   
   bool res = current_sample >= DATA_SIZE;
-  if(!res) {
-    current_sample++;
-  }
+  
   return res;
 }
 
@@ -78,22 +77,28 @@ bool measure()
   if (res) {
     json[PAYLOAD_INA260_CONSUMPTION] = filterMedian(dataConsumption);
     json[PAYLOAD_INA260_CHARGING] = filterMedian(dataCharging);
-    json[PAYLOAD_DS18B20] = filterMedian(dataTemperature);
+    int t = filterMedian(dataTemperature);
+    json[PAYLOAD_DS18B20] = t;
     json[PAYLOAD_GUT800] = filterMedian(dataDepth);    
   } else {
-    json[PAYLOAD_INA260_CONSUMPTION] = dataConsumption[DATA_SIZE - 1];
-    json[PAYLOAD_INA260_CHARGING] = dataCharging[DATA_SIZE - 1];
-    json[PAYLOAD_DS18B20] = dataTemperature[DATA_SIZE - 1];
-    json[PAYLOAD_GUT800] = dataDepth[DATA_SIZE - 1];
+    json[PAYLOAD_INA260_CONSUMPTION] = dataConsumption[current_sample];
+    json[PAYLOAD_INA260_CHARGING] = dataCharging[current_sample];
+    int t = dataTemperature[current_sample];
+    json[PAYLOAD_DS18B20] = t;
+    json[PAYLOAD_GUT800] = dataDepth[current_sample];
     
   }
 
   JsonObject& root = jsonBuffer.createObject();
   root[PAYLOAD_VALUE] = json;
   publishJson(TOPIC_DATA, root);
+
+  if(!res) {
+    current_sample++;
+  }
   
-  root.prettyPrintTo(Serial);
-  Serial.println();
+  //root.prettyPrintTo(Serial);
+  //Serial.println();
   return res;
 }
 
