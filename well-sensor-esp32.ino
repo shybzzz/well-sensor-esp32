@@ -41,6 +41,16 @@ void setup() {
   initQr();
  
   if (initSPIFSS()) {
+    
+    //set configs for INA with addr = (A1 = GND & A2 = GND)
+    setPowerMeterConfigs(powerMeterConfigs[0], 0b10000000, INA260::MODE_ISH_VBUS_CONTINUOUS, INA260::ISHCT_1_1MS,
+                          INA260::VBUSCT_1_1MS, INA260::AVG_64, 0);
+
+    //set configs for INA with addr = (A1 = SDA & A2 = GND)
+    setPowerMeterConfigs(powerMeterConfigs[1], 0b10010000, INA260::MODE_ISH_VBUS_CONTINUOUS, INA260::ISHCT_1_1MS,
+                          INA260::VBUSCT_1_1MS, INA260::AVG_64, 0);
+                      
+                          
     initWifi();
     initMqtt();
     initSensors();

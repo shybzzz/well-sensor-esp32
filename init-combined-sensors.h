@@ -36,6 +36,7 @@ void initSensors()
   {
     Serial.println("Found valid sensor configs. Init combined sensors.");
     powerMeters[0].init(powerMeterConfigs[0]);
+    powerMeters[1].init(powerMeterConfigs[1]);
     initDallasSensor();
   }
 }
