@@ -2,9 +2,10 @@
 #define __INIT_ADC__
 
 #define ADC_PIN 36u
+
 struct ADC_Config
 {
-  uint8_t resolution = 11;
+  uint8_t resolution = 10;
   uint8_t cycles = 8;
   uint8_t samples = 1;
   uint8_t clockDiv = 1;

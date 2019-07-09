@@ -38,6 +38,7 @@ void initSensors()
     powerMeters[0].init(powerMeterConfigs[0]);
     powerMeters[1].init(powerMeterConfigs[1]);
     initDallasSensor();
+    initADC();
   }
 }
 int gatherData(int val, int* data) {
