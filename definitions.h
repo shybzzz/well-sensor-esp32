@@ -69,4 +69,7 @@
 #define SENSOR_COMBINED                             7u
 
 #define POWER_METERS_COUNT                          2u
+
+// Esp related configs
+#define MEASUREMENT_DELAY                           ("delay")
 #endif

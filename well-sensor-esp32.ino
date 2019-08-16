@@ -28,6 +28,7 @@
 #include "filter-mean.h"
 
 #include "init-combined-sensors.h"
+#include "init-esp32.h"
 #include "init-server.h"
 
 
@@ -53,7 +54,8 @@ void setup() {
                           
     initWifi();
     initMqtt();
-    initSensors();
+    initSensors();    
+    initEsp32();
   }
 
   Serial.println("Well Sensor is running");
@@ -101,7 +103,7 @@ void loop() {
   noLight();
 
   if (!measure()) {
-    dance(100);
+    dance(espConfig.delayTime);
   }
 
   mqttClient.loop();
