@@ -12,45 +12,15 @@ EspConfigs espConfig;
 
 const char* espConfigFile = "/espConfig.json";
 
-
-bool loadEspConfig()
+bool setEsp32Config(JsonObject& json)
 {
-  bool res = false;
-
-  if (readFile(espConfigFile)) {
-      
-      DynamicJsonBuffer jsonBuffer;
-      JsonObject& json = jsonBuffer.parseObject(fileBuff);
-
-      if (json.success()) {
-          
-          if (json.containsKey(MEASUREMENT_DELAY)) {
-            espConfig.delayTime = json[MEASUREMENT_DELAY];  
-          }
-          
-         res = true;  
-      }
-      else{
-        Serial.println("Invalid json file.");  
-      }
-  }
-
-  return res;
-}
-
-void initEsp32()
-{
-  if (loadEspConfig()) {
-
-      Serial.println("Found valid ESP32 configs");
-      Serial.print("Meaurements delayTime = ");
-      Serial.println(espConfig.delayTime);
-  }
-  else {
-      espConfig.delayTime = DEFAULT_DELAY_TIME;
-      Serial.print("Default Meaurements delayTime = ");
-      Serial.println(espConfig.delayTime);
-  }  
+  if (json.containsKey(MEASUREMENT_DELAY)) {
+    
+    espConfig.delayTime = json[MEASUREMENT_DELAY];
+    return true;  
+    }
+    
+  return false;
 }
 
 bool saveEspConfigsToSPIFFS() {
@@ -72,8 +42,42 @@ bool saveEspConfigsToSPIFFS() {
 }
 
 void handleEspJson(JsonObject& json) {
-  if (json.success()) {
-    saveEspConfigsToSPIFFS();  
+  if (json.success() && setEsp32Config(json)) {
+    saveEspConfigsToSPIFFS(); 
+    
+    Serial.print("Meaurements delayTime = ");
+    Serial.println(espConfig.delayTime); 
+  }  
+}
+
+bool loadEspConfig()
+{
+  bool res = false;
+
+  if (readFile(espConfigFile)) {
+      res = true;  
+  }
+  else {
+      Serial.println("Invalid json file.");  
+  }
+
+  return res;
+}
+
+void initEsp32()
+{
+  if (loadEspConfig()) {
+
+      Serial.println("Found valid ESP32 configs");
+            
+      DynamicJsonBuffer jsonBuffer;
+      JsonObject& json = jsonBuffer.parseObject(fileBuff);
+      handleEspJson(json);
+  }
+  else {
+      espConfig.delayTime = DEFAULT_DELAY_TIME;
+      Serial.print("Default Meaurements delayTime = ");
+      Serial.println(espConfig.delayTime);
   }  
 }
 #endif

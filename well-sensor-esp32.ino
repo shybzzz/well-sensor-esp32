@@ -13,6 +13,7 @@
 #include "init-qr.h"
 #include "init-spiffs.h"
 #include "init-data.h"
+#include "init-esp32.h"
 #include "init-wifi.h"
 #include "init-mqtt.h"
 #include "init-dallas-temperature.h"
@@ -28,7 +29,6 @@
 #include "filter-mean.h"
 
 #include "init-combined-sensors.h"
-#include "init-esp32.h"
 #include "init-server.h"
 
 
@@ -103,7 +103,7 @@ void loop() {
   noLight();
 
   if (!measure()) {
-    dance(espConfig.delayTime);
+    dance(100);
   }
 
   mqttClient.loop();

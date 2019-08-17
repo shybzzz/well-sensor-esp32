@@ -101,6 +101,10 @@ bool measure()
   
   //root.prettyPrintTo(Serial);
   //Serial.println();
+  if (res) {
+    delay(espConfig.delayTime);  
+  }
+  
   return res;
 }
 
