@@ -48,7 +48,7 @@
 // MQTT Topics
 #define TOPIC_DATA                                  ("Data")
 #define TOPIC_SEPARATOR                             ("/")
-#define TOPIC_ESP_CONFIGS                           ("EspConfigs")
+#define TOPIC_ESP_CONFIGS                           ("Config")
 
 // Sensor Config Keys
 #define SENSOR_CONFIG_TYPE                          ("sensorType")
