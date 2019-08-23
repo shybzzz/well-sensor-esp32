@@ -26,8 +26,9 @@ void mqttCallback(char* topic, byte* payload, size_t len){
   if (strcmp(topic, TOPIC_ESP_CONFIGS) == 0)
   {
     Serial.println("Received configs topic:");
-    DynamicJsonBuffer jsonBuffer;
-    JsonObject& json = jsonBuffer.parseObject(payload);
+    DynamicJsonDocument jsonBuffer{MAX_STR_LEN * 4};
+    deserializeJson(jsonBuffer, payload);
+    JsonObject json = jsonBuffer.as<JsonObject>();
     handleEspJson(json);  
   }  
 }
@@ -65,10 +66,11 @@ bool loadMqttConfig() {
   bool res = false;
 
   if (readFile(mqttFileName)) {
-      DynamicJsonBuffer jsonBuffer;
-      JsonObject& json = jsonBuffer.parseObject(fileBuff);
+      DynamicJsonDocument jsonBuffer{MAX_STR_LEN * 4};
+      deserializeJson(jsonBuffer, fileBuff);
+      JsonObject json = jsonBuffer.as<JsonObject>();
       if (
-        json.success()
+        !json.isNull()
         && containsMqttConfig(json)
       ) {
         setMqttConfig(json[MQTT_CONFIG_SERVER], json[MQTT_CONFIG_PORT], 
@@ -86,8 +88,8 @@ bool saveMqttConfigToSPIFFS(const char* server, int port, const char* user, cons
   
   bool res = false;  
 
-  DynamicJsonBuffer jsonBuffer;
-  JsonObject& json = jsonBuffer.createObject();
+  DynamicJsonDocument jsonBuffer{MAX_STR_LEN * 4};
+  JsonObject json = jsonBuffer.as<JsonObject>();
 
   json[MQTT_CONFIG_SERVER] = server;
   json[MQTT_CONFIG_PORT] = port;
@@ -145,7 +147,8 @@ void publishJson(const char* topic, JsonObject& json) {
   json[PAYLOAD_DEVICE] = deviceId;
   
   String pailoadStr;
-  json.printTo(pailoadStr);
+  //json.printTo(pailoadStr);
+  serializeJson(json, pailoadStr);
   uint8_t pailoadSize = pailoadStr.length() + 1;
   char payload[pailoadSize];
   pailoadStr.toCharArray(payload, pailoadSize);
@@ -184,7 +187,7 @@ uint8_t handleMqttJson(JsonObject& json) {
   uint8_t res = 0;
   
   if(
-      json.success()
+      !json.isNull()
       && containsMqttConfig(json)
   ) {
         

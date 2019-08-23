@@ -35,12 +35,12 @@ bool readSocket(WiFiClient& client, uint8_t dataType) {
 bool writeJson(WiFiClient& client, JsonObject& json) {
 
   memset(socketBuff, '\0', MAX_SOCKET_BUFF_SIZE);
-  json.printTo(socketBuff);
-  client.write(socketBuff, json.measureLength());
+  serializeJson(json, socketBuff);
+  //json.printTo(socketBuff);
+  client.write(socketBuff, measureJson(json));
   Serial.println("Data sent to client");
-  json.prettyPrintTo(Serial);
+  serializeJsonPretty(json, Serial);
   Serial.println();
-
   return true;
 
 }
@@ -61,8 +61,8 @@ bool isClientConnected(WiFiClient& client) {
 
 bool sendConfig(WiFiClient& client) {
 
-  DynamicJsonBuffer jsonBuffer;
-  JsonObject& json = jsonBuffer.createObject();
+  DynamicJsonDocument jsonBuffer{MAX_STR_LEN * 4};
+  JsonObject json = jsonBuffer.as<JsonObject>();
 
   json[WIFI_CONFIG_IP] = WiFi.localIP().toString();
   json[WIFI_CONFIG_SSID] = wifiConfig.ssid;
@@ -78,8 +78,9 @@ bool listenSetConfig(WiFiClient& client) {
   bool res = false;
 
   if (readSocket(client, SET_CONFIG_REQUEST_HEADER)) {
-    DynamicJsonBuffer jsonBuffer;
-    JsonObject& json = jsonBuffer.parseObject(socketBuff);
+    DynamicJsonDocument jsonBuffer(MAX_STR_LEN * 4);
+    deserializeJson(jsonBuffer, socketBuff);
+    JsonObject json = jsonBuffer.as<JsonObject>();
     handleSensorJson(json);
 
     uint8_t wifiConfigEr = handleWifiJson(json);

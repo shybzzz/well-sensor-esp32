@@ -27,8 +27,8 @@ bool saveEspConfigsToSPIFFS() {
 
     bool res = false;
 
-    DynamicJsonBuffer jsonBuffer;
-    JsonObject& json = jsonBuffer.createObject();
+    DynamicJsonDocument jsonBuffer{MAX_STR_LEN * 2};
+    JsonObject json = jsonBuffer.as<JsonObject>();
 
     json[MEASUREMENT_DELAY] = espConfig.delayTime;
 
@@ -42,7 +42,7 @@ bool saveEspConfigsToSPIFFS() {
 }
 
 void handleEspJson(JsonObject& json) {
-  if (json.success() && setEsp32Config(json)) {
+  if (!json.isNull() && setEsp32Config(json)) {
     saveEspConfigsToSPIFFS(); 
     
     Serial.print("Meaurements delayTime = ");
@@ -70,8 +70,9 @@ void initEsp32()
 
       Serial.println("Found valid ESP32 configs");
             
-      DynamicJsonBuffer jsonBuffer;
-      JsonObject& json = jsonBuffer.parseObject(fileBuff);
+      DynamicJsonDocument jsonBuffer{MAX_STR_LEN * 2};
+      deserializeJson(jsonBuffer, fileBuff);
+      JsonObject json = jsonBuffer.as<JsonObject>();
       handleEspJson(json);
   }
   else {
