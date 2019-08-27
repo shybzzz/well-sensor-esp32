@@ -1,7 +1,6 @@
 #ifndef ____
 #define ____
-setWifiConfig("ASUS_Guest", "11111111");
-    setMqttConfig("m23.cloudmqtt.com", 12925, "tlwhlgqr", "g-VQc5c6w7eN", "Ihor");
+
  //   setPowerMeterConfigs(PowerMeterConfig& configs, uint8_t addr, uint8_t mode, uint8_t ishct,
  //                         uint8_t vbusct, uint8_t avg, uint8_t rst)
 

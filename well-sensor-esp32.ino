@@ -103,7 +103,7 @@ void loop() {
   noLight();
 
   if (!measure()) {
-    dance(100);
+    dance(10);
   }
 
   mqttClient.loop();
