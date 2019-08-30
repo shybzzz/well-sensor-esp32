@@ -73,7 +73,7 @@ void initEsp32()
       DynamicJsonDocument jsonBuffer{MAX_STR_LEN * 2};
       deserializeJson(jsonBuffer, fileBuff);
       JsonObject json = jsonBuffer.as<JsonObject>();
-      handleEspJson(json);
+      setEsp32Config(json);
   }
   else {
       espConfig.delayTime = DEFAULT_DELAY_TIME;

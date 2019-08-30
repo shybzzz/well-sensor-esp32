@@ -13,6 +13,7 @@ struct MqttConfig
 MqttConfig mqttConfig;
 const char *mqttFileName = "/mqttConfig.json";
 bool isMqttConfigSet = false;
+char deviceConfigTopic[MAX_STR_LEN];
 
 WiFiClient espClient;
 PubSubClient mqttClient(espClient);
@@ -23,7 +24,7 @@ void mqttCallback(char* topic, byte* payload, size_t len){
   Serial.print(topic);
   Serial.println("]");
   
-  if (strcmp(topic, TOPIC_ESP_CONFIGS) == 0)
+  if (strcmp(topic, deviceConfigTopic) == 0)
   {
     Serial.println("Received configs topic:");
     DynamicJsonDocument jsonBuffer{MAX_STR_LEN * 4};
@@ -110,8 +111,11 @@ bool connectMqtt(const char* user, const char* pwd, const char* device){
   mqttClient.connect(device, user, pwd);
   if (mqttClient.connected()) {    
     res = true;
-    mqttClient.subscribe(TOPIC_ESP_CONFIGS);
-    Serial.println("Connected to mqtt broker");    
+    Serial.println("Connected to mqtt broker"); 
+    
+    Serial.print("Subscribed to:");
+    Serial.println(deviceConfigTopic);
+    mqttClient.subscribe(deviceConfigTopic);   
   } else {
     Serial.print("failed, rc = ");
     Serial.println(mqttClient.state());
@@ -134,9 +138,11 @@ void setMqttServer(const char* server, int port){
 }
 
 void initMqtt() {
-  mqttClient.setCallback(mqttCallback);  
+  mqttClient.setCallback(mqttCallback);
+  snprintf(deviceConfigTopic, MAX_STR_LEN, "%s/%s", mqttConfig.deviceId, TOPIC_ESP_CONFIGS);  
   loadMqttConfig();
-  if(isMqttConfigSet){
+  
+  if (isMqttConfigSet){
     setMqttServer(mqttConfig.server, mqttConfig.port);
   }  
 }
