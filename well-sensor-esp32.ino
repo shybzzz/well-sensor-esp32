@@ -51,10 +51,6 @@ void setup() {
     setPowerMeterConfigs(powerMeterConfigs[1], 0b1001000, INA260::MODE_ISH_VBUS_CONTINUOUS, INA260::ISHCT_1_1MS,
                           INA260::VBUSCT_1_1MS, INA260::AVG_64, 0);
                       
-    setWifiConfig("ASUS_Guest", "11111111");
-    setMqttConfig("m23.cloudmqtt.com", 12925, "tlwhlgqr", "g-VQc5c6w7eN", "Ihor");
-
-                          
     initWifi();
     initMqtt();
     initSensors();    
@@ -106,7 +102,7 @@ void loop() {
   noLight();
 
   if (!measure()) {
-    dance(10);
+    dance(50);
   }
 
   mqttClient.loop();

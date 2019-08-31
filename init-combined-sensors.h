@@ -95,21 +95,12 @@ bool measure()
   }
  
   JsonObject pubJson = jsonRoot.as<JsonObject>();
-  
-  Serial.println("print json:");
-  serializeJsonPretty(pubJson, Serial);
-  Serial.println();
-  
- // root[PAYLOAD_VALUE] = json;
- 
   publishJson(TOPIC_DATA, pubJson);
 
   if(!res) {
     current_sample++;
   }
   
-  //root.prettyPrintTo(Serial);
-  //Serial.println();
   if (res) {
     delay(espConfig.delayTime);  
   }
