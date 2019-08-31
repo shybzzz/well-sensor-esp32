@@ -13,6 +13,7 @@
 #include "init-qr.h"
 #include "init-spiffs.h"
 #include "init-data.h"
+#include "init-esp32.h"
 #include "init-wifi.h"
 #include "init-mqtt.h"
 #include "init-dallas-temperature.h"
@@ -41,9 +42,19 @@ void setup() {
   initQr();
  
   if (initSPIFSS()) {
+    
+    //set configs for INA with addr = (A1 = GND & A2 = GND)
+    setPowerMeterConfigs(powerMeterConfigs[0], 0b1000000, INA260::MODE_ISH_VBUS_CONTINUOUS, INA260::ISHCT_1_1MS,
+                          INA260::VBUSCT_1_1MS, INA260::AVG_64, 0);
+
+    //set configs for INA with addr = (A1 = SDA & A2 = GND)
+    setPowerMeterConfigs(powerMeterConfigs[1], 0b1001000, INA260::MODE_ISH_VBUS_CONTINUOUS, INA260::ISHCT_1_1MS,
+                          INA260::VBUSCT_1_1MS, INA260::AVG_64, 0);
+                      
     initWifi();
     initMqtt();
-    initSensors();
+    initSensors();    
+    initEsp32();
   }
 
   Serial.println("Well Sensor is running");
@@ -91,7 +102,7 @@ void loop() {
   noLight();
 
   if (!measure()) {
-    dance(100);
+    dance(50);
   }
 
   mqttClient.loop();

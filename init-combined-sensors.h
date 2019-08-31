@@ -14,10 +14,11 @@ bool loadSensorConfig()
   bool res = false;
   
   if (readFile(sensorFileName)) {
-  DynamicJsonBuffer jsonBuffer;
-  JsonObject& json = jsonBuffer.parseObject(fileBuff);
+  DynamicJsonDocument jsonBuffer{MAX_STR_LEN * 2};
+  deserializeJson(jsonBuffer, fileBuff);
+  JsonObject json = jsonBuffer.as<JsonObject>();
   if (
-    json.success()
+    !json.isNull()
     && containsSensorConfig(json)
   ) {
     res = true;
@@ -36,6 +37,7 @@ void initSensors()
   {
     Serial.println("Found valid sensor configs. Init combined sensors.");
     powerMeters[0].init(powerMeterConfigs[0]);
+    powerMeters[1].init(powerMeterConfigs[1]);
     initDallasSensor();
     initADC();
   }
@@ -68,8 +70,10 @@ bool gatherAllData() {
 
 bool measure()
 {
-  DynamicJsonBuffer jsonBuffer;
-  JsonObject& json = jsonBuffer.createObject();
+  DynamicJsonDocument jsonRoot{MAX_STR_LEN * 3};
+  JsonObject root = jsonRoot.as<JsonObject>();
+  
+  JsonObject json = jsonRoot.createNestedObject(PAYLOAD_VALUE);
 
   gatherAllData();
   
@@ -89,17 +93,18 @@ bool measure()
     json[PAYLOAD_GUT800] = dataDepth[current_sample];
     
   }
-
-  JsonObject& root = jsonBuffer.createObject();
-  root[PAYLOAD_VALUE] = json;
-  publishJson(TOPIC_DATA, root);
+ 
+  JsonObject pubJson = jsonRoot.as<JsonObject>();
+  publishJson(TOPIC_DATA, pubJson);
 
   if(!res) {
     current_sample++;
   }
   
-  //root.prettyPrintTo(Serial);
-  //Serial.println();
+  if (res) {
+    delay(espConfig.delayTime);  
+  }
+  
   return res;
 }
 
@@ -107,8 +112,8 @@ bool saveSensorConfigToSPIFFS() {
 
   bool res = false;
 
-  DynamicJsonBuffer jsonBuffer;
-  JsonObject& json = jsonBuffer.createObject();
+  DynamicJsonDocument jsonBuffer{MAX_STR_LEN * 4};
+  JsonObject json = jsonBuffer.as<JsonObject>();
 
   json[SENSOR_CONFIG_TYPE] = SENSOR_COMBINED;
 
@@ -129,7 +134,7 @@ bool saveSensorConfigToSPIFFS() {
 
 void handleSensorJson(JsonObject& json) {
   if (
-    json.success()
+    !json.isNull()
     && containsSensorConfig(json)
   ) {
     uint8_t sensorType = json[SENSOR_CONFIG_TYPE];

@@ -48,6 +48,7 @@
 // MQTT Topics
 #define TOPIC_DATA                                  ("Data")
 #define TOPIC_SEPARATOR                             ("/")
+#define TOPIC_ESP_CONFIGS                           ("Config")
 
 // Sensor Config Keys
 #define SENSOR_CONFIG_TYPE                          ("sensorType")
@@ -69,4 +70,7 @@
 #define SENSOR_COMBINED                             7u
 
 #define POWER_METERS_COUNT                          2u
+
+// Esp related configs
+#define MEASUREMENT_DELAY                           ("delay")
 #endif

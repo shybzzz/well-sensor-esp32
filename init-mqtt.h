@@ -13,6 +13,7 @@ struct MqttConfig
 MqttConfig mqttConfig;
 const char *mqttFileName = "/mqttConfig.json";
 bool isMqttConfigSet = false;
+char deviceConfigTopic[MAX_STR_LEN];
 
 WiFiClient espClient;
 PubSubClient mqttClient(espClient);
@@ -21,12 +22,16 @@ void mqttCallback(char* topic, byte* payload, size_t len){
   
   Serial.print("Message arrived: [");
   Serial.print(topic);
-  Serial.print("] =");
-  for (size_t i = 0; i < len; ++i)
+  Serial.println("]");
+  
+  if (strcmp(topic, deviceConfigTopic) == 0)
   {
-    Serial.print(char(payload[i]));  
-  }
-  Serial.println();  
+    Serial.println("Received configs topic:");
+    DynamicJsonDocument jsonBuffer{MAX_STR_LEN * 4};
+    deserializeJson(jsonBuffer, payload);
+    JsonObject json = jsonBuffer.as<JsonObject>();
+    handleEspJson(json);  
+  }  
 }
 void setMqttConfig(const char* server, int port, const char* user, const char* pwd, const char* device){
   
@@ -62,10 +67,11 @@ bool loadMqttConfig() {
   bool res = false;
 
   if (readFile(mqttFileName)) {
-      DynamicJsonBuffer jsonBuffer;
-      JsonObject& json = jsonBuffer.parseObject(fileBuff);
+      DynamicJsonDocument jsonBuffer{MAX_STR_LEN * 4};
+      deserializeJson(jsonBuffer, fileBuff);
+      JsonObject json = jsonBuffer.as<JsonObject>();
       if (
-        json.success()
+        !json.isNull()
         && containsMqttConfig(json)
       ) {
         setMqttConfig(json[MQTT_CONFIG_SERVER], json[MQTT_CONFIG_PORT], 
@@ -83,8 +89,8 @@ bool saveMqttConfigToSPIFFS(const char* server, int port, const char* user, cons
   
   bool res = false;  
 
-  DynamicJsonBuffer jsonBuffer;
-  JsonObject& json = jsonBuffer.createObject();
+  DynamicJsonDocument jsonBuffer{MAX_STR_LEN * 4};
+  JsonObject json = jsonBuffer.to<JsonObject>();
 
   json[MQTT_CONFIG_SERVER] = server;
   json[MQTT_CONFIG_PORT] = port;
@@ -105,7 +111,11 @@ bool connectMqtt(const char* user, const char* pwd, const char* device){
   mqttClient.connect(device, user, pwd);
   if (mqttClient.connected()) {    
     res = true;
-    Serial.println("Connected to mqtt broker");    
+    Serial.println("Connected to mqtt broker"); 
+    
+    Serial.print("Subscribed to:");
+    Serial.println(deviceConfigTopic);
+    mqttClient.subscribe(deviceConfigTopic);   
   } else {
     Serial.print("failed, rc = ");
     Serial.println(mqttClient.state());
@@ -128,9 +138,11 @@ void setMqttServer(const char* server, int port){
 }
 
 void initMqtt() {
-  mqttClient.setCallback(mqttCallback);  
+  mqttClient.setCallback(mqttCallback);
   loadMqttConfig();
-  if(isMqttConfigSet){
+  snprintf(deviceConfigTopic, MAX_STR_LEN, "%s/%s", mqttConfig.deviceId, TOPIC_ESP_CONFIGS);  
+  
+  if (isMqttConfigSet){
     setMqttServer(mqttConfig.server, mqttConfig.port);
   }  
 }
@@ -141,7 +153,8 @@ void publishJson(const char* topic, JsonObject& json) {
   json[PAYLOAD_DEVICE] = deviceId;
   
   String pailoadStr;
-  json.printTo(pailoadStr);
+  //json.printTo(pailoadStr);
+  serializeJson(json, pailoadStr);
   uint8_t pailoadSize = pailoadStr.length() + 1;
   char payload[pailoadSize];
   pailoadStr.toCharArray(payload, pailoadSize);
@@ -180,7 +193,7 @@ uint8_t handleMqttJson(JsonObject& json) {
   uint8_t res = 0;
   
   if(
-      json.success()
+      !json.isNull()
       && containsMqttConfig(json)
   ) {
         
@@ -190,8 +203,8 @@ uint8_t handleMqttJson(JsonObject& json) {
     const char* pwd = json[MQTT_CONFIG_PWD];
     const char* device = json[MQTT_CONFIG_DEVICE_ID];
     
-    if(tryConnectMqtt(server, port, user, pwd, device)) {
-      if(saveMqttConfigToSPIFFS(server, port, user, pwd, device)) {
+    if (tryConnectMqtt(server, port, user, pwd, device)) {
+      if (saveMqttConfigToSPIFFS(server, port, user, pwd, device)) {
         setMqttConfig(server, port, user, pwd, device);
         Serial.println("MQTT is configured");
       } else {

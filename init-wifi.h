@@ -34,10 +34,11 @@ bool loadWifiConfig() {
   bool res = false;
 
   if (readFile(wifiFileName)) {
-    DynamicJsonBuffer jsonBuffer;
-    JsonObject& json = jsonBuffer.parseObject(fileBuff);
+    DynamicJsonDocument jsonBuffer{MAX_STR_LEN * 4};
+    deserializeJson(jsonBuffer, fileBuff);
+    JsonObject json = jsonBuffer.as<JsonObject>();
     if (
-      json.success()
+      !json.isNull()
       && containsWifiConfig(json)
     ) {
       setWifiConfig(json[WIFI_CONFIG_SSID], json[WIFI_CONFIG_PWD]);
@@ -54,8 +55,8 @@ bool saveWifiConfigToSPIFFS(const char* ssid, const char* pwd) {
 
   bool res = false;
 
-  DynamicJsonBuffer jsonBuffer;
-  JsonObject& json = jsonBuffer.createObject();
+  DynamicJsonDocument jsonBuffer(MAX_STR_LEN * 2);
+  JsonObject json = jsonBuffer.to<JsonObject>();
 
   json[WIFI_CONFIG_SSID] = ssid;
   json[WIFI_CONFIG_PWD] = pwd;
@@ -140,7 +141,7 @@ uint8_t handleWifiJson(JsonObject& json) {
   uint8_t res = 0;
 
   if (
-    json.success()
+    !json.isNull()
     && containsWifiConfig(json)
   ) {
     const char* ssid = json[WIFI_CONFIG_SSID];
