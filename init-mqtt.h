@@ -90,7 +90,7 @@ bool saveMqttConfigToSPIFFS(const char* server, int port, const char* user, cons
   bool res = false;  
 
   DynamicJsonDocument jsonBuffer{MAX_STR_LEN * 4};
-  JsonObject json = jsonBuffer.as<JsonObject>();
+  JsonObject json = jsonBuffer.to<JsonObject>();
 
   json[MQTT_CONFIG_SERVER] = server;
   json[MQTT_CONFIG_PORT] = port;
@@ -139,8 +139,8 @@ void setMqttServer(const char* server, int port){
 
 void initMqtt() {
   mqttClient.setCallback(mqttCallback);
-  snprintf(deviceConfigTopic, MAX_STR_LEN, "%s/%s", mqttConfig.deviceId, TOPIC_ESP_CONFIGS);  
   loadMqttConfig();
+  snprintf(deviceConfigTopic, MAX_STR_LEN, "%s/%s", mqttConfig.deviceId, TOPIC_ESP_CONFIGS);  
   
   if (isMqttConfigSet){
     setMqttServer(mqttConfig.server, mqttConfig.port);

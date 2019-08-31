@@ -55,8 +55,8 @@ bool saveWifiConfigToSPIFFS(const char* ssid, const char* pwd) {
 
   bool res = false;
 
-  DynamicJsonDocument jsonBuffer{MAX_STR_LEN * 4};
-  JsonObject json = jsonBuffer.as<JsonObject>();
+  DynamicJsonDocument jsonBuffer(MAX_STR_LEN * 2);
+  JsonObject json = jsonBuffer.to<JsonObject>();
 
   json[WIFI_CONFIG_SSID] = ssid;
   json[WIFI_CONFIG_PWD] = pwd;
