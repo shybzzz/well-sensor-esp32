@@ -28,7 +28,7 @@ bool saveEspConfigsToSPIFFS() {
     bool res = false;
 
     DynamicJsonDocument jsonBuffer{MAX_STR_LEN * 2};
-    JsonObject json = jsonBuffer.as<JsonObject>();
+    JsonObject json = jsonBuffer.to<JsonObject>();
 
     json[MEASUREMENT_DELAY] = espConfig.delayTime;
 
