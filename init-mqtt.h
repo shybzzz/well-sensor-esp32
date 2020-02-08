@@ -13,7 +13,9 @@ struct MqttConfig
 MqttConfig mqttConfig;
 const char *mqttFileName = "/mqttConfig.json";
 bool isMqttConfigSet = false;
+
 char deviceConfigTopic[MAX_STR_LEN];
+char deviceUpdateTopic[MAX_STR_LEN];
 
 WiFiClient espClient;
 PubSubClient mqttClient(espClient);
@@ -31,7 +33,15 @@ void mqttCallback(char* topic, byte* payload, size_t len){
     deserializeJson(jsonBuffer, payload);
     JsonObject json = jsonBuffer.as<JsonObject>();
     handleEspJson(json);  
-  }  
+  }
+  else if (strcmp(topic, deviceUpdateTopic) == 0)
+  {
+    Serial.println("Received Update firmware request.");
+    DynamicJsonDocument jsonBuffer{MAX_STR_LEN * 4};
+    deserializeJson(jsonBuffer, payload);
+    JsonObject json = jsonBuffer.as<JsonObject>();
+    handleEspUpdateJson(json);   
+  }
 }
 void setMqttConfig(const char* server, int port, const char* user, const char* pwd, const char* device){
   
@@ -116,6 +126,9 @@ bool connectMqtt(const char* user, const char* pwd, const char* device){
     Serial.print("Subscribed to:");
     Serial.println(deviceConfigTopic);
     mqttClient.subscribe(deviceConfigTopic);   
+    Serial.print("Subscribed to:");
+    Serial.println(deviceUpdateTopic);
+    mqttClient.subscribe(deviceUpdateTopic);
   } else {
     Serial.print("failed, rc = ");
     Serial.println(mqttClient.state());
@@ -140,7 +153,9 @@ void setMqttServer(const char* server, int port){
 void initMqtt() {
   mqttClient.setCallback(mqttCallback);
   loadMqttConfig();
+  
   snprintf(deviceConfigTopic, MAX_STR_LEN, "%s/%s", mqttConfig.deviceId, TOPIC_ESP_CONFIGS);  
+  snprintf(deviceUpdateTopic, MAX_STR_LEN, "%s/%s", mqttConfig.deviceId, TOPIC_ESP_UPDATE_FIRMWARE);
   
   if (isMqttConfigSet){
     setMqttServer(mqttConfig.server, mqttConfig.port);

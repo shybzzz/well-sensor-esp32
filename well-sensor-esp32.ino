@@ -1,9 +1,11 @@
-#include "Arduino.h"
-#include "SPIFFS.h"
-#include "WiFi.h"
-#include "ArduinoJson.h"
-#include "PubSubClient.h"
-#include "esp32-hal-adc.h"
+#include <Arduino.h>
+#include <SPIFFS.h>
+#include <WiFi.h>
+#include <Update.h>
+#include <HTTPClient.h>
+#include <ArduinoJson.h>
+#include <PubSubClient.h>
+#include <esp32-hal-adc.h>
 #include "INA260.h"
 
 #include "definitions.h"
@@ -15,9 +17,11 @@
 #include "init-data.h"
 #include "init-esp32.h"
 #include "init-wifi.h"
+#include "init-ota.h"
 #include "init-mqtt.h"
 #include "init-dallas-temperature.h"
 #include "init-adc.h"
+
 #include "data-median.h"
 #include "data-adc.h"
 #include "data-dallas-temperature.h"
@@ -41,16 +45,7 @@ void setup() {
   initButton();
   initQr();
  
-  if (initSPIFSS()) {
-    
-    //set configs for INA with addr = (A1 = GND & A2 = GND)
-    setPowerMeterConfigs(powerMeterConfigs[0], 0b1000000, INA260::MODE_ISH_VBUS_CONTINUOUS, INA260::ISHCT_1_1MS,
-                          INA260::VBUSCT_1_1MS, INA260::AVG_64, 0);
-
-    //set configs for INA with addr = (A1 = SDA & A2 = GND)
-    setPowerMeterConfigs(powerMeterConfigs[1], 0b1001000, INA260::MODE_ISH_VBUS_CONTINUOUS, INA260::ISHCT_1_1MS,
-                          INA260::VBUSCT_1_1MS, INA260::AVG_64, 0);
-                      
+  if (initSPIFSS()) {                    
     initWifi();
     initMqtt();
     initSensors();    

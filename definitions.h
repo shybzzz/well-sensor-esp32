@@ -49,6 +49,7 @@
 #define TOPIC_DATA                                  ("Data")
 #define TOPIC_SEPARATOR                             ("/")
 #define TOPIC_ESP_CONFIGS                           ("Config")
+#define TOPIC_ESP_UPDATE_FIRMWARE                   ("Update")
 
 // Sensor Config Keys
 #define SENSOR_CONFIG_TYPE                          ("sensorType")
@@ -73,4 +74,5 @@
 
 // Esp related configs
 #define MEASUREMENT_DELAY                           ("delay")
+#define UPDATE_URL                                  ("url")
 #endif
