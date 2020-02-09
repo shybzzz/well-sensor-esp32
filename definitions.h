@@ -57,7 +57,7 @@
 #define POWER_MODE                                  ("mode")
 #define POWER_ISHCT                                 ("ishct")
 #define POWER_VBUSCT                                ("vbusct")
-#define POWER_AVG                                   ("avg")  
+#define POWER_AVG                                   ("avg")
 #define POWER_RST                                   ("rst")
 
 // Sensor Types

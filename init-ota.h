@@ -1,60 +1,47 @@
 #ifndef __INIT_OTA__
 #define __INIT_OTA__
 
-const char* espUpdatesFile = "/updates.json";
+const char* espUpdatesFile = "/updateInfo.json";
 
-// OTA Logic 
-bool execOTA(JsonObject& json) 
+// OTA Logic
+bool execOTA(JsonObject& updateInfo)
 {
   Serial.println("ExecOTA...");
   HTTPClient http;
-  // Connect to S3
-  
-  http.begin(json[UPDATE_URL]);
+  http.begin(updateInfo[UPDATE_URL]);
 
   int status = http.GET();
   Serial.print("Code: ");
-  Serial.println(status);  
+  Serial.println(status);
   if (status == HTTP_CODE_OK)
   {
     // get lenght of document (is -1 when Server sends no Content-Length header)
     int len = http.getSize();
-    Serial.print("Read bytes: ");
-    Serial.println(len);
-     
     bool canBegin = Update.begin(len);
     Serial.print("Error code from Update lib: ");
     Serial.println(Update.getError());
     // If yes, begin
-    if (canBegin) 
+    if (canBegin)
     {
       Serial.println("Begin OTA. This may take 2 - 5 mins to complete. Things might be quite for a while.. Patience!");
       // No activity would appear on the Serial monitor
       // So be patient. This may take 2 - 5mins to complete
       auto stream = http.getStreamPtr();
-      //http.writeToStream(stream);
-      Serial.println("Created WiFiClient&...");
-      Serial.print("Bytes available in socket: ");
-      Serial.println(stream->available());
       size_t written = Update.writeStream(*stream);
 
-      if (written == len) 
+      if (written == len)
       {
         Serial.println("Written : " + String(written) + " successfully");
-      } else 
-      {
-        Serial.println("Written only : " + String(written) + "/" + String(len) + ". Retry?" );
-        return false;
       }
-
-      if (Update.end()) 
+      
+      if (Update.end())
       {
         Serial.println("OTA done!");
-        if (Update.isFinished()) 
+        if (Update.isFinished())
         {
           Serial.println("Update successfully completed. Rebooting.");
           return true;
-        } else 
+        } else
         {
           Serial.println("Update not finished? Something went wrong!");
         }
@@ -72,19 +59,19 @@ bool execOTA(JsonObject& json)
   return false;
 }
 
-void saveUpdateConfigsJson(JsonObject& json)
+void saveUpdateConfigsJson(JsonObject& updateInfo)
 {
-  bool res = saveJson(espUpdatesFile, json);
+  bool res = saveJson(espUpdatesFile, updateInfo);
 
   if (res) {
-    Serial.println("ESP32 update configs are saved.");  
+    Serial.println("ESP32 update configs are saved.");
   }
 }
 
-void handleEspUpdateJson(JsonObject& json) {
-  if (!json.isNull() && execOTA(json)) {
-      saveUpdateConfigsJson(json);
-      ESP.restart(); 
-  }  
+void handleEspUpdateJson(JsonObject& updateInfo) {
+  if (!updateInfo.isNull() && execOTA(updateInfo)) {
+    saveUpdateConfigsJson(updateInfo);
+    ESP.restart();
+  }
 }
 #endif

@@ -44,11 +44,11 @@ void setup() {
   initLed();
   initButton();
   initQr();
- 
-  if (initSPIFSS()) {                    
+
+  if (initSPIFSS()) {
     initWifi();
     initMqtt();
-    initSensors();    
+    initSensors();
     initEsp32();
   }
 
