@@ -49,6 +49,7 @@
 #define TOPIC_DATA                                  ("Data")
 #define TOPIC_SEPARATOR                             ("/")
 #define TOPIC_ESP_CONFIGS                           ("Config")
+#define TOPIC_ESP_UPDATE_FIRMWARE                   ("Update")
 
 // Sensor Config Keys
 #define SENSOR_CONFIG_TYPE                          ("sensorType")
@@ -56,7 +57,7 @@
 #define POWER_MODE                                  ("mode")
 #define POWER_ISHCT                                 ("ishct")
 #define POWER_VBUSCT                                ("vbusct")
-#define POWER_AVG                                   ("avg")  
+#define POWER_AVG                                   ("avg")
 #define POWER_RST                                   ("rst")
 
 // Sensor Types
@@ -73,4 +74,5 @@
 
 // Esp related configs
 #define MEASUREMENT_DELAY                           ("delay")
+#define UPDATE_URL                                  ("url")
 #endif
