@@ -33,8 +33,10 @@ jobs:
         arduino-cli core update-index
         arduino-cli lib install ArduinoJson@6.11.5 PubSubClient@2.7.0 DallasTemperature@3.8.0 OneWire@2.3.4
         arduino-cli core update-index
+    
+    - name: Setup Python
+      uses: actions/setup-python@v1.2.0
         
     - name: Compile Binary
       run: |
-        apt install python-serial
         arduino-cli compile --fqbn esp32:esp32:esp32
