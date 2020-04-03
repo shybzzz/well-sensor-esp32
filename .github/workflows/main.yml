@@ -25,18 +25,18 @@ jobs:
     - name: Setup Arduino CLI
       uses: arduino/setup-arduino-cli@v1.0.0
 
-    # Runs a set of commands using the runners shell
-    - name: Setup Aduino Environment
+    - name: Setup Python
+      uses: actions/setup-python@v1.2.0
+
+    - name: Setup Well Sensor Environment
       run: |
         arduino-cli core update-index
         arduino-cli core install esp32:esp32@1.0.0
         arduino-cli core update-index
         arduino-cli lib install ArduinoJson@6.11.5 PubSubClient@2.7.0 DallasTemperature@3.8.0 OneWire@2.3.4
         arduino-cli core update-index
+        pip install pyserial
     
-    - name: Setup Python
-      uses: actions/setup-python@v1.2.0
-        
     - name: Compile Binary
       run: |
         arduino-cli compile --fqbn esp32:esp32:esp32
