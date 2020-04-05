@@ -28,7 +28,6 @@ jobs:
 
       - name: Setup Well Sensor Environment
         run: |
-          pwd
           arduino-cli core update-index
           arduino-cli core install esp32:esp32@1.0.0
           arduino-cli core update-index
@@ -38,11 +37,11 @@ jobs:
 
       - name: Compile Binary
         run: |
-          arduino-cli compile --fqbn esp32:esp32:esp32 --build-path /usr/bin/build
+          arduino-cli compile --fqbn esp32:esp32:esp32 --build-path /home/runner/work/well-sensor-esp32/well-sensor-esp32/build
       - name: Upload artifact
         uses: actions/upload-artifact@v1.0.0
         with:
           # Artifact name
           name: well-sensor-esp32
           # Directory containing files to upload
-          path: /usr/bin/git/usr/bin/build
+          path: build
