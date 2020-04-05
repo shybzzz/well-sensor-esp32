@@ -34,6 +34,7 @@ jobs:
           arduino-cli lib install ArduinoJson@6.11.5 PubSubClient@2.7.0 DallasTemperature@3.8.0 OneWire@2.3.4
           arduino-cli core update-index
           pip install pyserial
+          echo cd
 
       - name: Compile Binary
         run: |
