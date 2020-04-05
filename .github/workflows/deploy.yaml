@@ -37,7 +37,7 @@ jobs:
 
       - name: Compile Binary
         run: |
-          arduino-cli compile --fqbn esp32:esp32:esp32 --build-path /home/runner/work/well-sensor-esp32/well-sensor-esp32/build
+          arduino-cli compile --fqbn esp32:esp32:esp32 --build-path /home/runner/work/well-sensor-esp32/well-sensor-esp32/build --output ${{ format('well-sensor-{0}', github.run_id) }}
       - name: Upload artifact
         uses: actions/upload-artifact@v1.0.0
         with:
