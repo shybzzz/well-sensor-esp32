@@ -37,11 +37,11 @@ jobs:
 
       - name: Compile Binary
         run: |
-          arduino-cli compile --fqbn esp32:esp32:esp32 --build-path /build
+          arduino-cli compile --fqbn esp32:esp32:esp32 --build-path /usr/bin/git/build
       - name: Upload artifact
         uses: actions/upload-artifact@v1.0.0
         with:
           # Artifact name
           name: well-sensor-esp32
           # Directory containing files to upload
-          path: /build
+          path: /usr/bin/git/usr/bin/git/build
