@@ -1,12 +1,15 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Well-Sensor ESP32 - Check Build
+name: Well-Sensor ESP32 - Deploy to S3
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
 on:
   push:
     branches: [combined-sensor]
+
+env:
+  build_name: ${{ format('well-sensor-{0}', github.run_id) }} 
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -37,11 +40,34 @@ jobs:
 
       - name: Compile Binary
         run: |
-          arduino-cli compile --fqbn esp32:esp32:esp32 --output ${{ format('well-sensor-{0}', github.run_id) }}
+          arduino-cli compile --fqbn esp32:esp32:esp32 --output ${{ env.build_name }}
       - name: Upload artifact
         uses: actions/upload-artifact@v1.0.0
         with:
           # Artifact name
-          name: well-sensor-esp32
+          name: ${{ env.build_name }}
           # Directory containing files to upload
-          path: ${{ format('well-sensor-{0}.bin', github.run_id) }}
+          path: ${{ format('{0}.bin', env.build_name) }}
+          
+  deploy:
+    needs: [build]
+    runs-on: [ubuntu-latest]
+    name: Push ESP32 Binary to S3
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v1.0.0
+        with:
+          # Artifact name
+          name: ${{ env.build_name }}
+      
+      - name: Copy to S3 Bucket
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          aws s3 cp \
+            --recursive \
+            --region eu-west-1 \
+            ${{ format( '{0}/{1}.bin', env.build_name, env.build_name ) }} s3://well-sensor-esp32-bin
+       
+        
