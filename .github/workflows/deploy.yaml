@@ -68,6 +68,6 @@ jobs:
           aws s3 cp \
             --recursive \
             --region eu-west-1 \
-            ${{ format( '{0}/{1}.bin', env.build_name, env.build_name ) }} s3://well-sensor-esp32-bin
+            ${{ env.build_name }} s3://well-sensor-esp32-bin
        
         
